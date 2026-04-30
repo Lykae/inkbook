@@ -1,0 +1,30 @@
+footer {
+  background-color: $blue;
+  height: 130px;
+  width: 100%;
+  color: white;
+  box-sizing: border-box;
+  &:before {
+    content: "";
+    position: absolute;
+    background-color: $blue;
+    left: 0;
+    width: 100vw;
+    height: 130px;
+    z-index: -10;
+  }
+  .footer_content {
+    text-align: center;
+    padding-top: 15px;
+    a {
+      color: darken($white, 10%);
+      transition: color 150ms linear;
+      &:hover {
+        color: white;
+      }
+    }
+    i {
+      font-size: 2em;
+    }
+  }
+}

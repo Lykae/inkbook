@@ -1,0 +1,32 @@
+@mixin button($color) {
+  background-color: $color;
+  transition: all 200ms ease-out;
+  border: 0;
+  color: white;
+  &:hover, &:active, &:focus {
+    background-color: darken($color, 15%);
+    outline: 0;
+    cursor: pointer;
+  }
+}
+
+@mixin well {
+  border: 2px solid $blue;
+  &_header {
+    border-bottom: 2px solid $blue;
+    background-color: $white;
+    text-align: center;
+    font-family: "Oswald", sans-serif;
+    padding: 10px 0;
+  }
+  &_body {
+    color: black;
+    padding: 10px;
+  }
+}
+
+@for $i from 1 through 7 {
+  .hand-card-animate:nth-of-type(#{$i}) {
+    animation: slideIn #{($i /10)}s;
+  }
+}

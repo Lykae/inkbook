@@ -1,0 +1,73 @@
+.deck_detail {
+  margin-bottom: 20px;
+  h2 {
+    margin-bottom: 0;
+  }
+  &_format {
+    margin-top: 5px;
+    font-weight: bold;
+  }
+  &_colors {
+    @include well;
+    margin-bottom: 10px;
+    &_body {
+      display: flex;
+      padding: 10px;
+      justify-content: center;
+      align-items: center;
+      svg {
+        width: 90%;
+      }
+    }
+  }
+  &_cmc {
+    @include well;
+    margin-bottom: 10px;
+  }
+  &_well {
+    @include well;
+    margin-bottom: 10px;
+    &_body {
+      span {
+        line-height: 20px;
+        transition: letter-spacing 100ms ease-in;
+        &:hover {
+          letter-spacing: 0.3px;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+  &_active_card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    img {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+  }
+  p {
+    padding: 20px 0;
+  }
+}
+
+.cmc_inner {
+  display: flex;
+  justify-content: space-around;
+  padding: 10px;
+  color: black;
+  align-items: center;
+  font-family: "Oswald", sans-serif;
+}
+
+.proxy-button {
+  @include button($green);
+  height: 40px;
+  display: inline-block;
+  text-align: center;
+  padding: 10px 10px 0 10px;
+  text-decoration: none;
+  margin-bottom: 20px;
+  font-family: "Oswald", sans-serif;
+}

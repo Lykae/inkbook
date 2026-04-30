@@ -1,0 +1,55 @@
+body {
+  background-color: lighten($white, 6%);
+  overflow-x: hidden;
+  font-family: "Roboto", sans-serif;
+}
+
+a {
+  text-decoration: inherit;
+  color: inherit;
+}
+
+input, select {
+  border-radius: 0;
+  -webkit-appearance: none;
+  height: 29px;
+  padding: 0px 7px;
+  transition: background-color 150ms ease-out;
+  font-size: 14px;
+  font-family: "Roboto", sans-serif;
+  &:focus {
+    outline: 0;
+    background-color: $white;
+  }
+}
+
+#wrapper {
+  min-height: 70vh;
+}
+
+.container {
+  margin-top: 40px;
+  max-width: 100%;
+}
+
+.loading {
+  width: 100%;
+  text-align: center;
+  opacity: 0.4;
+  font-size: 3em;
+  animation: loading 3s infinite;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, 20%);
+}
+
+* {
+  transition: width 300ms;
+}
+
+.hidden_large {
+  @media screen and (min-width: 780px) {
+    display: none;
+  }
+}

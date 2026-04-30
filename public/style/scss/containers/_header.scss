@@ -1,0 +1,51 @@
+@mixin buttonsDiv() {
+  display: block;
+  position: relative;
+  .build {
+    @include button($green);
+    padding: 10px;
+    text-decoration: none;
+    margin-right: 10px;
+  }
+  .all {
+    @include button($magenta);
+    padding: 10px;
+    text-decoration: none;
+    margin-right: 10px;
+  }
+}
+
+header {
+  background-color: $blue;
+  height: 65px;
+  padding: 10px;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 0 20px #777;
+  img {
+    margin-left: 20px;
+    margin-top: 10px;
+    height: 50px;
+    padding-bottom: 5px;
+  }
+  .header_buttons_newdeck {
+    @include buttonsDiv();
+    @media screen and (max-width: 500px) {
+      display: none;
+    }
+  }
+}
+
+.header_buttons_newdeck_small {
+  display: none;
+  @media screen and (max-width: 501px) {
+    @include buttonsDiv();
+    margin-right: 25px;
+  }
+}

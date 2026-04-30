@@ -1,0 +1,380 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #fff;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.card-viewer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  background: rgba(0, 0, 0, 0.85);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 9999;
+  touch-action: none;
+}
+
+.card-viewer-content {
+  position: relative;
+  max-width: 90%;
+  max-height: 90%;
+}
+
+.card-viewer-content img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.card-viewer-close {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  font-size: 30px;
+  color: white;
+  cursor: pointer;
+}
+
+.card-viewer-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 30px;
+  color: white;
+  cursor: pointer;
+  padding: 10px;
+}
+
+.card-viewer-prev {
+  left: -50px;
+}
+
+.card-viewer-next {
+  right: -50px;
+}
+
+.card-swipe-area {
+  touch-action: pan-y;
+  user-select: none;
+}
+.card-swipe-area img {
+  pointer-events: none;
+}
+
+@media (max-width: 767px) {
+  .deck_detail_active_card {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .selected_card {
+    display: none;
+  }
+}
+
+.card-viewer-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.card-viewer-actions button {
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
+}
+
+.card-count {
+  font-size: 22px;
+  text-align: center;
+  background: #fff;
+  color: #222;
+  padding: 12px 12px;
+  border-radius: 4px;
+  font-weight: bold;
+  min-width: 64px;
+  display: inline-block;
+}
+
+.card-swipe-area img {
+  transition: opacity 0.2s ease;
+}
+
+.card-viewer-actions button {
+  transition: transform 0.1s ease, background 0.1s ease;
+}
+
+.card-viewer-actions button:active,
+.card-viewer-actions button.pressed {
+  transform: scale(0.9);
+  background: #444;
+}
+
+.selected_card_buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.selected_card_buttons button {
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+}
+
+.selected_card_buttons .card-count {
+  background: rgba(0,0,0,0.7);
+  color: white;
+  padding: 12px 12px;
+  border-radius: 4px;
+  min-width: 64px;
+  text-align: center;
+}
+
+.mobile_topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  background: #111;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 12px;
+  z-index: 1000;
+}
+
+.save_btn {
+  padding: 6px 12px;
+}
+
+.save_btn:disabled {
+  opacity: 0.4;
+}
+
+.mobile_bottombar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 55px;
+  background: #111;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 1000;
+}
+
+.mobile_bottombar button {
+  flex: 1;
+  background: none;
+  border: none;
+  color: white;
+  padding: 10px;
+}
+
+@media (min-width: 768px) {
+  .mobile_topbar,
+  .mobile_bottombar {
+    display: none;
+  }
+}
+
+.mobile_topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #fff;
+  padding: 10px;
+  display: flex;
+  justify-content: flex-end;
+  border-bottom: 1px solid #ddd;
+}
+
+@media (max-width: 768px) {
+  .deck h2 {
+    margin-top: 60px;
+  }
+}
+
+@media (max-width: 768px) {
+  html, body {
+    overflow-x: hidden;
+  }
+
+  .container.deck {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .row {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .col-sm-4 {
+    width: 100% !important;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .desktop_layout {
+    display: none !important;
+  }
+}
+
+.header_nav_icons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-left: auto;
+}
+
+.icon_btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #fff;
+  padding: 6px;
+  transition: 0.15s ease;
+}
+
+.icon_btn:hover {
+  transform: scale(1.1);
+}
+
+.icon_btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.app_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+}
+
+/* LEFT */
+.header_left {
+  display: flex;
+  align-items: center;
+}
+
+/* CENTER */
+.header_center {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+/* RIGHT */
+.header_right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 40px;
+}
+
+/* ICONS */
+.icon_btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #fff;
+  padding: 6px;
+}
+
+/* SAVE ICON */
+
+.icon_btn.save_icon:disabled {
+  color: #2ecc71 !important;
+}
+
+.save_icon {
+  color: red;
+}
+
+.icon_btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/*mobile bottom bar*/
+
+.mobile_bottombar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: #222;
+  border-top: 1px solid #ddd;
+  z-index: 1000;
+}
+
+.nav_btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #444;
+  padding: 10px;
+}
+
+.nav_btn.active {
+  color: #000;
+  transform: scale(1.15);
+}
+
+.nav_btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #444;
+  padding: 10px;
+  transition: transform 0.12s ease, color 0.12s ease;
+}
+
+.nav_btn:active {
+  transform: scale(0.85);
+}
+
+.nav_btn.active {
+  color: #000;
+  transform: scale(1.15);
+}
