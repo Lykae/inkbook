@@ -1,6 +1,5 @@
 .deck_item {
   padding: 10px;
-  box-shadow: 0 0 0 #777;
   overflow: hidden;
   border: 2px solid $blue;
   box-sizing: border-box;
@@ -71,7 +70,6 @@
   }
   &:hover {
     transform: scale(1.02);
-    box-shadow: 0 0 20px #999;
   }
 }
 

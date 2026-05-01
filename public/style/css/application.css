@@ -161,8 +161,8 @@
 .container {
   margin-right: auto;
   margin-left: auto;
-  padding-left: 10px;
-  padding-right: 10px; }
+  /*padding-left: 10px;*/
+  /*padding-right: 10px;*/}
 
 @media (min-width: 768px) {
   .container {
@@ -1383,7 +1383,7 @@ input, select {
   min-height: 70vh; }
 
 .container {
-  margin-top: 40px;
+  margin-top: 32px;
   max-width: 100%; }
 
 .loading {
@@ -1424,14 +1424,9 @@ header {
   position: fixed;
   left: 0;
   top: 0;
-  z-index: 100;
-  -webkit-box-shadow: 0 0 20px #777;
-          box-shadow: 0 0 20px #777; }
+  z-index: 100;}
   header img {
-    margin-left: 20px;
-    margin-top: 10px;
-    height: 50px;
-    padding-bottom: 5px; }
+    height: 50px; }
   header .header_buttons_newdeck {
     display: block;
     position: relative; }
@@ -1530,6 +1525,7 @@ footer {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+  height: 90vh;
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center; }
@@ -1549,13 +1545,10 @@ footer {
     margin-right: 50px; }
   .deck_inputs input, .deck_inputs select {
     margin: 0 10px;
-    border: 1px solid #495867;
-    background-color: #999;
-    color: #fff }
+    background-color: #F6BE00;
+    color: #222 }
   @media screen and (max-width: 780px) {
     .deck_inputs {
-      background-color: #555;
-      border: 2px solid #333;
       display: block;
       padding: 10px; }
       .deck_inputs input, .deck_inputs select {
@@ -1567,9 +1560,7 @@ footer {
   color: red; }
 
 .deck_item {
-  padding: 10px;
-  -webkit-box-shadow: 0 0 0 #777;
-          box-shadow: 0 0 0 #777;
+  padding: 10px;;
   overflow: hidden;
   border: 2px solid #495867;
   -webkit-box-sizing: border-box;
@@ -1644,9 +1635,7 @@ footer {
               transform: translate(-50%, -50%); }
   .deck_item:hover {
     -webkit-transform: scale(1.02);
-            transform: scale(1.02);
-    -webkit-box-shadow: 0 0 20px #999;
-            box-shadow: 0 0 20px #999; }
+            transform: scale(1.02);}
 
 .deck {
   position: relative; }
@@ -1825,8 +1814,7 @@ footer {
 .deck_output {
   padding-top: 15px;
   background-color: #222;
-  border: 2px solid #555;
-  height: 75vh; }
+  height: 90vh; }
   .deck_output_header {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -2001,17 +1989,15 @@ footer {
 
 .card_search {
   background-color: #222;
-  border: 2px solid #555;
-  height: 75vh; }
+  height: 85vh; }
   .card_search input {
-    background-color: #999;
-    color: #fff;
+    background-color: #F6BE00;
+    color: #222;
     width: 100%;
     height: 30px;
     outline: 0;
     border: 0; }
   .card_search ul {
-    background-color: #999;
     height: 75%;
     padding: 5px;
     padding-bottom: 10px;
@@ -2073,7 +2059,7 @@ footer {
   -webkit-transition: all 200ms ease-out;
   transition: all 200ms ease-out;
   border: 0;
-  color: white;
+  color: #F6BE00;
   height: 40px;
   width: 120px;
   display: inline-block;
@@ -2083,13 +2069,13 @@ footer {
   margin: 20px;
   font-family: "Oswald", sans-serif; }
   .back-button:hover, .back-button:active, .back-button:focus {
-    background-color: black;
+    background-color: #555;
     outline: 0;
     cursor: pointer; }
 
 .intro {
-  background-color: black;
-  background-image: url(../../img/ponder.jpg);
+  background-color: #222;
+  /*background-image: url(../../img/ponder.jpg);*/
   background-size: cover;
   background-position: center;
   position: absolute;

@@ -5,7 +5,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #fff;
+  color: #F6BE00;
+  background-color: #222;
 }
 
 code {
@@ -189,7 +190,7 @@ code {
   flex: 1;
   background: none;
   border: none;
-  color: white;
+  color: #F6BE00;
   padding: 10px;
 }
 
@@ -262,7 +263,7 @@ code {
   border: none;
   font-size: 18px;
   cursor: pointer;
-  color: #fff;
+  color: #F6BE00;
   padding: 6px;
   transition: 0.15s ease;
 }
@@ -282,6 +283,7 @@ code {
   align-items: center;
   justify-content: space-between;
   padding: 8px 12px;
+  border-bottom: 1px solid #F6BE00; 
 }
 
 /* LEFT */
@@ -313,7 +315,7 @@ code {
   border: none;
   font-size: 18px;
   cursor: pointer;
-  color: #fff;
+  color: #F6BE00;
   padding: 6px;
 }
 
@@ -344,7 +346,7 @@ code {
   justify-content: space-around;
   align-items: center;
   background: #222;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid #F6BE00;
   z-index: 1000;
 }
 
