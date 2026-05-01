@@ -297,7 +297,8 @@ code {
   display: flex;
   gap: 12px;
   align-items: center;
-  justify-content: center;
+  justify-content: right;
+  margin-right: 12px;
   flex: 1;
 }
 
@@ -379,4 +380,67 @@ code {
 .nav_btn.active {
   color: #000;
   transform: scale(1.15);
+}
+
+/*deck list buttons*/
+.card_controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: 1vw;
+}
+
+.ctrl_btn {
+  background: none;
+  border: none;
+  color: #F6BE00;
+  font-size: 4vh  ;
+  cursor: pointer;
+}
+
+.count_display {
+  color: white;
+  font-weight: bold;
+  min-width: 20px;
+  text-align: center;
+}
+
+.deck_row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card_title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card_count {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.card_count.inkable {
+  background-color: #F6BE00;  /* your theme color */
+  color: #222;               /* contrast */
+  border: 2px solid F6BE00;
+}
+
+.card_count.not_inkable {
+  background: #222;
+  color: #F6BE00;
+  border: 2px solid #F6BE00;
+}
+
+.search_row {
+  list-style: none;
+  padding: 6px 0;
 }

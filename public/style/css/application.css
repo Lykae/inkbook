@@ -1525,12 +1525,11 @@ footer {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  height: 90vh;
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center; }
   .deck_inputs input, .deck_inputs select {
-    width: 70vw }
+    width: 20vw }
   .deck_inputs:before {
     content: "";
     position: absolute;
@@ -1550,9 +1549,11 @@ footer {
   @media screen and (max-width: 780px) {
     .deck_inputs {
       display: block;
-      padding: 10px; }
+      padding: 10px;
+      height: 90vh; }
       .deck_inputs input, .deck_inputs select {
-        margin: 10px; }
+        margin: 10px;
+        width: 70vw  }
       .deck_inputs:before {
         display: none; } }
 
@@ -1814,7 +1815,7 @@ footer {
 .deck_output {
   padding-top: 15px;
   background-color: #222;
-  height: 90vh; }
+  height: 85vh; }
   .deck_output_header {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -1832,11 +1833,9 @@ footer {
   .deck_output_cards {
     padding: 5px;
     padding-bottom: 10px;
-    background-color: white;
     overflow-y: scroll;
     height: 89%;
     font-family: "Roboto", sans-serif;
-    color: black;
     overflow-x: hidden; }
     .deck_output_cards div {
       padding: 3px 0;
@@ -1862,17 +1861,24 @@ footer {
         .deck_output_cards span button:hover {
           cursor: pointer; }
 
+@media (max-width: 767px) {
+  .deck_output {
+    height: 90vh;
+  }
+}
+
 .deck_output strong {
   padding: 5px 10px 5px 10px;
 }
 
-.deck_bottom {
-  margin: 30px -15px; }
+.deck_bottom { }
   .deck_bottom label {
     display: block;
     margin-bottom: 10px; }
   .deck_bottom textarea {
-    width: 100%;
+    background-color: #F6BE00;
+    color: #222;
+    width: 90vw;
     padding: 5px;
     height: 138px;
     font-family: "Roboto", sans-serif;

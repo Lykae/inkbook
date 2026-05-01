@@ -4,7 +4,12 @@ import _ from 'lodash';
 
 import { fetchCards, selectCard } from '../features/cards/cardsSlice';
 
-export default function CardSearch({ openViewer }) {
+export default function CardSearch({ 
+    openViewer,
+    getCount,
+    onIncrease,
+    onDecrease 
+  }) {
   const dispatch = useDispatch();
   const foundCards = useSelector(state => state.cards.foundCards);
 
@@ -36,16 +41,53 @@ export default function CardSearch({ openViewer }) {
           foundCards?.map((card, i) => (
             <li
               key={`${card.Name}-${card.Set_Name}-${i}`}
-              onClick={() => {
-                dispatch(selectCard(card));
-
-                if (openViewer) {
-                  openViewer(foundCards, card);
-                }
-              }}
+              className="deck_row search_row"
             >
-              <strong>{card.Name}</strong>
-              <span className="pull-right">{card.Type}</span>
+              <div
+                className="card_name"
+                onClick={() => {
+                  dispatch(selectCard(card));
+                  if (openViewer) openViewer(foundCards, card);
+                }}
+              >
+                <strong className="card_title">
+              
+                  <span
+                    className={`card_count ${card.Inkable ? 'inkable' : 'not_inkable'}`}
+                  >
+                    {card.Cost}
+                  </span>
+              
+                  {card.Name}
+              
+                </strong>
+              </div>
+              
+              <div className="card_controls">
+                <button
+                  className="ctrl_btn minus"
+                  onClick={(e) => {
+                    e.stopPropagation(); // 🔥 prevents triggering select
+                    onDecrease(card);
+                  }}
+                >
+                  −
+                </button>
+                
+                <span className="count_display">
+                  {getCount ? getCount(card) : 0}
+                </span>
+                
+                <button
+                  className="ctrl_btn plus"
+                  onClick={(e) => {
+                    e.stopPropagation(); // 🔥 important
+                    onIncrease(card);
+                  }}
+                >
+                  +
+                </button>
+              </div>
             </li>
           ))
         )}

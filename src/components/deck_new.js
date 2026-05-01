@@ -243,15 +243,40 @@ export default function NewDeck() {
     .map(({ card, count }) => (
       <div key={getCardKey(card)} className="deck_row">
 
-        <span onClick={() => openViewer(list, card)}>
-          <strong>
-        <span className="count">{count} x </span>{card.Name}</strong>
-        </span>
+        <div
+          className="card_name"
+          onClick={() => openViewer(list, card)}
+        >
+          <strong className="card_title">
 
+            <span
+              className={`card_count ${card.Inkable ? 'inkable' : 'not_inkable'}`}
+            >
+              {count}
+            </span>
 
-        <button onClick={() => removeFn(card)}>
-          <i className="fa fa-minus" />
-        </button>
+            {card.Name}
+
+          </strong>
+        </div>
+
+        <div className="card_controls">
+          <button
+            className="ctrl_btn minus"
+            onClick={() => decreaseCard(card)}
+          >
+            −
+          </button>
+
+          <span className="count_display">{count}</span>
+
+          <button
+            className="ctrl_btn plus"
+            onClick={() => increaseCard(card)}
+          >
+            +
+          </button>
+        </div>
 
       </div>
     ));
@@ -302,10 +327,25 @@ export default function NewDeck() {
           </div>
         </div>
 
+        
+
+        {/* DESCRIPTION */}
+        <div className="deck_bottom">
+          <label>Description</label>
+          <textarea
+            value={deckDescription}
+            onChange={(e) => setDeckDescription(e.target.value)}
+          />
+        </div>
+
         <div className="row">
 
           {/* SEARCH */}
-          <CardSearch openViewer={openViewer} />
+          <CardSearch openViewer={openViewer}
+            getCount={getCount}
+            onIncrease={increaseCard}
+            onDecrease={decreaseCard}
+          />
 
           <div className="col-sm-4 selected_card">
 
@@ -382,28 +422,6 @@ export default function NewDeck() {
 
         </div>
 
-        {/* DESCRIPTION */}
-        <div className="deck_bottom">
-          <label>Description</label>
-          <textarea
-            value={deckDescription}
-            onChange={(e) => setDeckDescription(e.target.value)}
-          />
-
-          <div className="deck_bottom_buttons">
-            <span className="save_button" onClick={saveDeck}>
-              Save Deck
-            </span>
-
-            <span
-              className="cancel_button"
-              onClick={() => navigate('/')}
-            >
-              Cancel
-            </span>
-          </div>
-        </div>
-
       </div>
 
       {/* ========================= */}
@@ -469,6 +487,17 @@ export default function NewDeck() {
                   ))}
                 </select>
               </div>
+
+              
+
+        {/* DESCRIPTION */}
+        <div className="deck_bottom">
+          <label>Description</label>
+          <textarea
+            value={deckDescription}
+            onChange={(e) => setDeckDescription(e.target.value)}
+          />
+        </div>
 
             </div>
           )}
