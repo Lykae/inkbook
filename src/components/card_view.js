@@ -9,7 +9,8 @@ export default function CardViewer({
   onAddMaybeboard,
   getCount,
   onIncrease,
-  onDecrease
+  onDecrease,
+  showEditControls = false
 }) {
     const [offset, setOffset] = useState({ x: 0, y: 0 });
     const [animating, setAnimating] = useState(false);
@@ -29,7 +30,6 @@ export default function CardViewer({
       setImageLoaded(false);
     }, [currentIndex]);
     
-    // lock background scroll when open
     useEffect(() => {
       if (!open) return;
     
@@ -132,28 +132,31 @@ export default function CardViewer({
           </div>
 
         {imageLoaded && (<div className="card-viewer-actions">
-            <button
+            {showEditControls && (<button
               className={pressed === 'dec' ? 'pressed' : ''}
               onClick={() => handlePress(onDecrease, current, 'dec')}
             >
               −
             </button>
+            )}
 
             <span className="card-count">{count}</span>
 
-            <button
+            {showEditControls && (<button
               className={pressed === 'inc' ? 'pressed' : ''}
               onClick={() => handlePress(onIncrease, current, 'inc')}
             >
               +
             </button>
+            )}
 
-            <button
+            {showEditControls && (<button
               className={pressed === 'maybe' ? 'pressed' : ''}
               onClick={() => handlePress(onAddMaybeboard, current, 'maybe')}
             >
               +?
             </button>
+            )}
         </div>)}
     
         </div>

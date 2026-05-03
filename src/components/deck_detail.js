@@ -10,6 +10,8 @@ import ColorChart from './color_chart';
 import CmcChart from './cmc_chart';
 import AnimateOnChange from 'react-animate-on-change';
 
+import { getCardKey } from '../helpers/getCardKey';
+
 export default function DeckDetail() {
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -25,6 +27,15 @@ export default function DeckDetail() {
     dispatch(fetchDeck(id));
   }, [id, dispatch]);
 
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [view, setView] = useState('stats'); 
+
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
+
   const [viewerOpen, setViewerOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -37,6 +48,15 @@ export default function DeckDetail() {
       image: c.image || c.Image
     }));
   }, [deck?.cards]);
+
+  const maybeList = useMemo(() => {
+    return (deck?.maybeboard || []).map((c) => ({
+      ...c,
+      name: c.name || c.Name,
+      set_name: c.set_name || c.Set_Name,
+      image: c.image || c.Image
+    }));
+  }, [deck?.maybeboard]);
 
   //const handleCardClick = (card) => {
   //  setActiveCard(card);
@@ -71,6 +91,22 @@ export default function DeckDetail() {
     }
   };
 
+  const getGroupedCards = () => {
+    const counts = {};
+
+    cardList.forEach(card => {
+      const key = `${card.name}-${card.cost}-${card.set_name}`;
+
+      if (!counts[key]) {
+        counts[key] = { card, count: 0 };
+      }
+
+      counts[key].count++;
+    });
+
+    return Object.values(counts);
+  };
+
   const handleCloseViewer = () => {
     setViewerOpen(false);
     setCurrentIndex(0);
@@ -103,6 +139,169 @@ export default function DeckDetail() {
     ));
   };
 
+  const renderMobileGrid = () => {
+    const grouped = getGroupedCards();
+
+    return (
+      <div className="mobile_card_grid">
+        {grouped.map(({ card, count }) => (
+          <div
+            key={`${card.name}-${card.cost}-${card.set_name}`}
+            className="mobile_card_item"
+            onClick={() => handleCardClick(card)}
+          >
+            <img src={card.image} alt={card.name} />
+
+            <div className="card_count_badge">
+              {count}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const renderList = (list, isMaybe = false) => {
+    const grouped = list.reduce((acc, card) => {
+      const key = getCardKey(card);
+
+      if (!acc[key]) {
+        acc[key] = { card, count: 0 };
+      }
+
+      acc[key].count += 1;
+      return acc;
+    }, {});
+
+    return Object.values(grouped)
+      .sort((a, b) => a.card.name.localeCompare(b.card.name))
+      .map(({ card, count }) => (
+        <div key={getCardKey(card)} className="deck_row" 
+            onClick={() => handleCardClick(card)}>
+        
+          <div className="card_name">
+            <strong className="card_title">
+
+              <span
+                className={`card_count ${card.Inkable ? 'inkable' : 'not_inkable'}`}
+              >
+                {count}
+              </span>
+
+              {card.name}
+
+            </strong>
+          </div>
+
+          <div className="card_controls">
+            <span className="count_display">{count}</span>
+          </div>
+
+        </div>
+      ));
+  };
+
+  const renderCardsColumn = () => (
+    <div className="deck_output">
+      <div className="deck_output_header">
+        <h5>Main Deck</h5>
+        <label>{cardList.length} cards</label>
+      </div>
+
+      <div className="deck_output_cards">
+        {renderList(cardList)}
+      </div>
+    </div>
+  );
+
+  const renderViewerColumn = () => (
+    <div className="deck_detail_active_card">
+      <AnimateOnChange
+        baseClassName="active-card"
+        animationClassName="active-card-animate"
+        animate={true}
+      >
+        <img src={activeCard.image} alt={activeCard.name} />
+      </AnimateOnChange>
+    </div>
+  );
+
+  const renderStatsColumn = () => (
+    <>
+    <div className="deck">
+
+      {/* HEADER */}
+      <div className="deck_output">
+      
+        <div className="deck_output_header">
+          <h5>{deck.name}</h5>
+          <label>{deck.format} • {deck.cards?.length || 0} cards</label>
+        </div>
+      
+        {deck.description && (
+          <div className="stats_description">
+            {deck.description}
+          </div>
+        )}
+      
+        {/* CONTENT GRID */}
+        <div className="stats_grid">
+        
+          <div>
+            <div className="stats_header">
+              Colors
+            </div>
+            <div>
+              <ColorChart deck={deck} />
+            </div>
+          </div>
+        
+          <div>
+            <div className="stats_header">
+              Curve
+            </div>
+            <div>
+              <CmcChart deck={deck} />
+            </div>
+          </div>
+        
+        </div>
+      </div>
+      
+    </div>
+    </>
+  );
+
+  const renderTools = () => (
+    <>
+      <div className="deck_output">
+        <div className="deck_output_header">
+          <h5>Tools</h5>
+          <label>Deck utilities</label>
+        </div>
+
+        <div>
+          <Link to={`/proxy/${id}`} className="proxy-button">
+            Print proxies
+          </Link>
+
+          <SampleHand deck={deck} />
+        </div>
+      </div>
+    </>
+  );
+
+  const getCount = (card) => {
+    if (!card) return 0;
+
+    const key = getCardKey(card);
+
+    return cardList.filter(c => {
+      const cKey = getCardKey(c);
+      return cKey === key;
+    }).length;
+  };
+
   if (!deck) {
     return <h3 className="loading">loading deck...</h3>;
   }
@@ -111,65 +310,12 @@ export default function DeckDetail() {
 
   return (
     <div className="container deck_detail">
-
+    {!isMobile && (
       <div className="row">
-        <h2>{deck.name}</h2>
-        <span className="deck_detail_format">
-          {deck.format} deck by {creator}
-        </span>
-
-        <p className="deck_detail_description">
-          {deck.description}
-        </p>
-      </div>
-
-      <div className="row">
-
-        {/* LEFT COLUMN */}
-        <div className="col-sm-4">
-          <div className="deck_detail_well">
-            <div className="deck_detail_well_header">Cards</div>
-            <div className="deck_detail_well_body">
-              {renderCards(() => true)}
-            </div>
-          </div>
-        </div>
-
-
-        {/* MIDDLE */}
-        <div className="col-sm-5">
-
-          <div className="deck_detail_active_card">
-            <AnimateOnChange
-              baseClassName="active-card"
-              animationClassName="active-card-animate"
-              animate={true}
-            >
-              <img
-                src={activeCard.image}
-                alt={activeCard.name}
-              />
-            </AnimateOnChange>
-          </div>
-
-        </div>
-
-        {/* RIGHT */}
+        <div className="col-sm-4">{renderCardsColumn()}</div>
+        <div className="col-sm-5">{renderViewerColumn()}</div>
         <div className="col-sm-3">
-          <div className="deck_detail_colors">
-            <div className="deck_detail_colors_header">Colors</div>
-            <div className="deck_detail_colors_body">
-              <ColorChart deck={deck} />
-            </div>
-          </div>
-          <div className="deck_detail_cmc">
-            <div className="deck_detail_cmc_header">
-              Cost Curve
-            </div>
-            <div className="deck_detail_cmc_body">
-              <CmcChart deck={deck} />
-            </div>
-          </div>
+          {renderStatsColumn()}
           <div className="deck_detail_well">
             <div className="deck_detail_well_header">Maybe</div>
             <div className="deck_detail_well_body">
@@ -178,14 +324,71 @@ export default function DeckDetail() {
           </div>
         </div>
       </div>
+    )}
 
-      <Link to={`/proxy/${id}`} className="proxy-button">
-        View deck as printable proxies
-      </Link>
+    {isMobile && (
+      <div className="mobile_view_container">
+      
+        {view === 'cards' && (
+          <div className="deck_output">
+            <div className="deck_output_header">
+              <h5>Main Deck</h5>
+              <label>{cardList.length} cards</label>
+            </div>
 
-      <br />
+            <div className="deck_output_cards">
+              {renderList(cardList)}
+            </div>
+          </div>
+        )}
 
-      <SampleHand deck={deck} />
+        {view === 'viewer' && renderMobileGrid()}
+
+        {view === 'stats' && renderStatsColumn()}
+
+        {view === 'maybe' && (
+          <div className="deck_output">
+            <div className="deck_output_header">
+              <h5>Maybe</h5>
+              <label>{maybeList.length} cards</label>
+            </div>
+                  
+            <div className="deck_output_cards">
+              {renderList(maybeList)}
+            </div>
+          </div>
+        )}
+
+        {view === 'tools' && renderTools()}
+
+      </div>
+    )}
+
+    {isMobile && (
+      <div className="mobile_bottombar">
+        
+        <button onClick={() => setView('stats')} className="nav_btn">
+          <i className="fa fa-bar-chart" />
+        </button>
+      
+        <button onClick={() => setView('cards')} className="nav_btn">
+          <i className="fa fa-list" />
+        </button>
+        
+        <button onClick={() => setView('viewer')} className="nav_btn">
+          <i className="fa fa-picture-o" />
+        </button>
+        
+        <button onClick={() => setView('maybe')} className="nav_btn">
+          <i className="fa fa-star-o" />
+        </button>
+
+        <button onClick={() => setView('tools')} className="nav_btn">
+          <i className="fa fa-magic" />
+        </button>
+        
+      </div>
+    )}
 
       <CardViewer
         open={viewerOpen}
@@ -193,6 +396,8 @@ export default function DeckDetail() {
         currentIndex={currentIndex}
         setCurrentIndex={setCurrentIndex}
         onClose={handleCloseViewer}
+        showEditControls={false}
+        getCount={getCount}
       />
 
     </div>

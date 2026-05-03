@@ -431,7 +431,7 @@ code {
 .card_count.inkable {
   background-color: #F6BE00;  /* your theme color */
   color: #222;               /* contrast */
-  border: 2px solid F6BE00;
+  border: 2px solid #F6BE00;
 }
 
 .card_count.not_inkable {
@@ -444,3 +444,217 @@ code {
   list-style: none;
   padding: 6px 0;
 }
+
+/* Logo */
+.logo_text {
+  font-family: "Playwrite DE SAS", cursive;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-size: 3em;
+}
+
+.logo_text_banner {
+  font-family: "Playwrite DE SAS", cursive;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-size: 1.5em;
+}
+
+/* Mobile Grid */
+.mobile_card_grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 per row */
+  gap: 8px;
+  padding: 8px;
+}
+
+.mobile_card_item {
+  position: relative;
+  cursor: pointer;
+}
+
+.mobile_card_item img {
+  width: 100%;
+  border-radius: 6px;
+}
+
+.card_count_badge {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  background: rgba(0,0,0,0.8);
+  color: white;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 10px;
+}
+
+.stats_block {
+  margin-bottom: 16px;
+}
+
+.stats_block label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.card_controls.placeholder {
+  visibility: hidden;
+}
+
+/* mobile detail stats page */
+.stats_meta {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #F6BE00;
+}
+
+.stats_title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #F6BE00;
+}
+
+.stats_subtitle {
+  font-size: 13px;
+  opacity: 0.8;
+  margin-top: 4px;
+}
+
+.stats_description {
+  margin-top: 8px;
+  font-size: 13px;
+  opacity: 0.85;
+  line-height: 1.4;
+  padding-left: 2px;
+}
+
+.stats_block {
+  margin-top: 16px;
+  padding: 10px;
+  border: 1px solid rgba(246, 190, 0, 0.2);
+  border-radius: 6px;
+}
+
+.stats_block label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 6px;
+  color: #F6BE00;
+}
+
+.stats_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+  padding-bottom: 90px;
+}
+
+.stats_grid .deck_output {
+  border: 1px solid rgba(246, 190, 0, 0.15);
+  background: transparent;
+}
+
+.stats_header {
+  display: flex;
+  font-size: 1.2em !important;
+  justify-content: center;
+  
+  font-family: "Roboto Slab", sans-serif;
+  font-weight: 700;
+  border-top: #F6BE00 1px solid;
+}
+
+/* mobile detail tools page */
+.tool_block {
+  margin-bottom: 18px;
+  padding: 10px;
+  border: 1px solid rgba(246, 190, 0, 0.2);
+  border-radius: 6px;
+}
+
+.tool_title {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #F6BE00;
+}
+
+.hand_container {
+  text-align: center;
+  padding: 10px;
+}
+
+.hand_button {
+  margin-bottom: 10px;
+  background: none;
+  border: 1px solid #F6BE00;
+  color: #F6BE00;
+  cursor: pointer;
+}
+
+.sample_hand {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+  height: 30vh;
+
+  gap: 0;
+  padding: 0 10px;
+  overflow: visible;
+}
+
+.hand-card {
+  flex: 1;
+  max-width: 16vw;
+  min-width: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  transition: transform 0.2s ease;
+  cursor: pointer;
+
+  margin-left: -3vw;
+}
+
+.hand-card {
+  transition: transform 0.25s ease, margin 0.25s ease;
+}
+
+.hand-card:first-child {
+  margin-left: 0;
+}
+
+.hand-card:hover {
+  transform: translateY(-15px) scale(1.08);
+  z-index: 10;
+}
+
+.hand-card img {
+  width: 100%;
+  height: auto;
+  max-height: 65vh;
+
+  object-fit: contain;
+  border-radius: 8px;
+
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.sample_hand {
+  perspective: 1000px;
+}
+
+.hand-card:nth-child(1) { transform: rotate(-10deg); }
+.hand-card:nth-child(2) { transform: rotate(-6deg); }
+.hand-card:nth-child(3) { transform: rotate(-3deg); }
+.hand-card:nth-child(4) { transform: rotate(0deg); }
+.hand-card:nth-child(5) { transform: rotate(3deg); }
+.hand-card:nth-child(6) { transform: rotate(6deg); }
+.hand-card:nth-child(7) { transform: rotate(10deg); }

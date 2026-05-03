@@ -16,6 +16,7 @@ export default function Header({
         <Link to="/decks" className="logo">
           <img src="/img/Logo.png" alt="Inkbook" />
         </Link>
+        <div className="logo_text_banner">INKBOOK</div>
       </div>
 
       {/* CENTER NAV */}

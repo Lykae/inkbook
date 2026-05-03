@@ -8,10 +8,11 @@ export default function Intro() {
 
         <Link to="/">
           <img
-            src="/img/Logo-Main.png"
+            src="/img/Logo.png"
             alt="Inkbook"
           />
         </Link>
+        <div className="logo_text">INKBOOK</div>
 
         <br />
 

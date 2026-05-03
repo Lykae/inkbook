@@ -12,6 +12,8 @@ import CardViewer from './card_view';
 
 import { getFormats } from '../constants/formats';
 
+import { getCardKey } from '../helpers/getCardKey';
+
 export default function NewDeck() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -149,7 +151,6 @@ export default function NewDeck() {
   }, [isDirty, saveDeck, setCanSave, setOnSave]);
 
   //mobile card view
-  const getCardKey = (c) => (`${c.Name}-${c.Set_Name}`);
 
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerCards, setViewerCards] = useState([]);
@@ -439,7 +440,14 @@ export default function NewDeck() {
               transition={{ duration: 0.3 }}
             >
         
-          {view === 'search' && <CardSearch openViewer={openViewer} />}
+          {view === 'search' && (
+            <CardSearch
+              openViewer={openViewer}
+              getCount={getCount}
+              onIncrease={increaseCard}
+              onDecrease={decreaseCard}
+            />
+          )}
 
           {view === 'main' && (
             <div className="deck_output">
@@ -543,6 +551,7 @@ export default function NewDeck() {
         getCount={getCount}
         onIncrease={increaseCard}
         onDecrease={decreaseCard}
+        showEditControls={true}
       />
 
     </div>

@@ -2,9 +2,6 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { initDB } from '../../db/initDB';
 import {saveDB}  from '../../db/saveDB';
 
-// -------------------------
-// FETCH ALL DECKS
-// -------------------------
 export const fetchDecks = createAsyncThunk(
   'decks/fetchDecks',
   async () => {
@@ -22,7 +19,6 @@ export const fetchDecks = createAsyncThunk(
         obj[col] = row[i];
       });
 
-      // 👇 IMPORTANT: parse stored deck JSON
       if (obj.data) {
         try {
           const parsed = JSON.parse(obj.data);
@@ -41,9 +37,6 @@ export const fetchDecks = createAsyncThunk(
   }
 );
 
-// -------------------------
-// CREATE DECK
-// -------------------------
 export const createDeck = createAsyncThunk(
   'decks/createDeck',
   async (deck) => {
@@ -65,9 +58,6 @@ export const createDeck = createAsyncThunk(
   }
 );
 
-// -------------------------
-// FETCH SINGLE DECK
-// -------------------------
 export const fetchDeck = createAsyncThunk(
   'decks/fetchDeck',
   async (id) => {
@@ -89,7 +79,6 @@ export const fetchDeck = createAsyncThunk(
       obj[col] = row[i];
     });
 
-    // 👇 parse JSON back into usable deck object
     if (obj.data) {
       const parsed = JSON.parse(obj.data);
       return {

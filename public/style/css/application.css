@@ -1277,7 +1277,8 @@ h4, label {
   font-family: 'Oswald', sans-serif;
   font-size: 14px;
   font-weight: 300;
-  letter-spacing: 1px; }
+  letter-spacing: 1px; 
+  margin-right: 1em;}
 
 h5 {
   font-family: "Roboto Slab", sans-serif;
@@ -1549,8 +1550,7 @@ footer {
   @media screen and (max-width: 780px) {
     .deck_inputs {
       display: block;
-      padding: 10px;
-      height: 90vh; }
+      padding: 10px; }
       .deck_inputs input, .deck_inputs select {
         margin: 10px;
         width: 70vw  }
@@ -1736,27 +1736,27 @@ footer {
   -ms-flex-pack: distribute;
       justify-content: space-around;
   padding: 10px;
-  color: black;
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
   font-family: "Oswald", sans-serif; }
 
 .proxy-button {
-  background-color: #558B6E;
+  background-color: #F6BE00;
   -webkit-transition: all 200ms ease-out;
   transition: all 200ms ease-out;
   border: 0;
-  color: white;
+  color: #222;
   height: 40px;
-  display: inline-block;
+  display: flex;
+  justify-content: center;
   text-align: center;
   padding: 10px 10px 0 10px;
   text-decoration: none;
   margin-bottom: 20px;
   font-family: "Oswald", sans-serif; }
   .proxy-button:hover, .proxy-button:active, .proxy-button:focus {
-    background-color: #385c48;
+    background-color: #555;
     outline: 0;
     cursor: pointer; }
 
@@ -1831,20 +1831,18 @@ footer {
     .deck_output_header span {
       font-family: "Roboto", sans-serif; }
   .deck_output_cards {
-    padding: 5px;
-    padding-bottom: 10px;
     overflow-y: scroll;
-    height: 89%;
+    height: 90vh;
     font-family: "Roboto", sans-serif;
     overflow-x: hidden; }
     .deck_output_cards div {
-      padding: 3px 0;
+      padding: 0px 0;
       -webkit-transition: -webkit-transform 100ms ease-out;
       transition: -webkit-transform 100ms ease-out;
       transition: transform 100ms ease-out;
       transition: transform 100ms ease-out, -webkit-transform 100ms ease-out; }
       .deck_output_cards div:hover {
-        background-color: #e8f9f1;
+        background-color: #555;
         cursor: pointer; }
     .deck_output_cards span {
       margin: 5px;
@@ -1930,25 +1928,19 @@ footer {
       outline: 0;
       cursor: pointer; }
 
-.sample_hand {
-  height: 300px;
-  width: 100%; }
-  .sample_hand img {
-    width: 14.28%;
-    -webkit-box-align: baseline;
-        -ms-flex-align: baseline;
-            align-items: baseline; }
-
 .hand_button {
-  background-color: #558B6E;
+  background-color: #F6BE00;
   -webkit-transition: all 200ms ease-out;
   transition: all 200ms ease-out;
   border: 0;
-  color: white;
+  width: 40vw;
+  justify-content: center;
+  font-family: "Oswald", sans-serif;
+  color: #222;
   margin: 20px 0;
   padding: 10px; }
   .hand_button:hover, .hand_button:active, .hand_button:focus {
-    background-color: #385c48;
+    background-color: #555;
     outline: 0;
     cursor: pointer; }
 
@@ -2020,7 +2012,7 @@ footer {
       transition: transform 100ms ease-out;
       transition: transform 100ms ease-out, -webkit-transform 100ms ease-out; }
       .card_search ul li:hover {
-        background-color: #e8f9f1;
+        background-color: #555;
         cursor: pointer; }
 
 .proxy-page {
@@ -2098,18 +2090,17 @@ footer {
             transform: translate(-50%, -50%);
     text-align: center; }
     .intro_content img {
-      margin-bottom: 100px;
       -webkit-transition: all 200ms ease-in-out;
       transition: all 200ms ease-in-out; }
       .intro_content img:hover {
         -webkit-transform: scale(1.2);
                 transform: scale(1.2); }
   .intro_build {
-    background-color: #558B6E;
+    background-color: #F6BE00;
     -webkit-transition: all 200ms ease-out;
     transition: all 200ms ease-out;
     border: 0;
-    color: white;
+    color: #222;
     text-decoration: none;
     margin: 10px;
     height: 40px;
@@ -2119,11 +2110,11 @@ footer {
       outline: 0;
       cursor: pointer; }
   .intro_all {
-    background-color: #270722;
+    background-color: #F6BE00;
     -webkit-transition: all 200ms ease-out;
     transition: all 200ms ease-out;
     border: 0;
-    color: white;
+    color: #222;
     text-decoration: none;
     margin: 10px;
     height: 40px;
