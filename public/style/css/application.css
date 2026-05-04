@@ -1853,6 +1853,7 @@ footer {
 @media (max-width: 767px) {
   .deck_output {
     height: 90vh;
+    padding: 0.7em;
   }
 
   .deck_output_cards {
