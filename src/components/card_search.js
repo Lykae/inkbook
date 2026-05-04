@@ -5,6 +5,7 @@ import _ from 'lodash';
 import { fetchCards, selectCard } from '../features/cards/cardsSlice';
 
 export default function CardSearch({ 
+    layout,
     openViewer,
     getCount,
     onIncrease,
@@ -25,6 +26,34 @@ export default function CardSearch({
     []
   );
 
+  const renderGrid = () => (
+    <div className="card_grid">
+      {foundCards.map((card, i) => (
+        <div
+          key={`${card.Name}-${card.Set_Name}-${i}`}
+          className="card_grid_item"
+          onClick={() => {
+            dispatch(selectCard(card));
+            openViewer(foundCards, card);
+          }}
+        >
+          <img src={card.Image} alt={card.Name} />
+
+          <div
+            className="card_grid_controls"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button onClick={() => onDecrease(card)}>−</button>
+              <div className="card_count_badge_grid">
+                {getCount(card)}
+              </div>
+            <button onClick={() => onIncrease(card)}>+</button>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
   return (
     <div className="card_search col-sm-4">
       <h4>Search Cards</h4>
@@ -34,6 +63,9 @@ export default function CardSearch({
         onChange={(e) => search(e.target.value)}
       />
 
+      {layout === 'grid' ? (
+          renderGrid()
+        ) : (
       <ul>
         {foundCards?.length < 1 && searchSubmitted ? (
           <span className="error">No cards found.</span>
@@ -92,6 +124,7 @@ export default function CardSearch({
           ))
         )}
       </ul>
+      )}
     </div>
   );
 }

@@ -47,6 +47,8 @@ export default function NewDeck() {
   const prevView = React.useRef(view);
   
   const selectedDeck = useSelector(state => state.decks.selectedDeck);
+
+  const [layout, setLayout] = useState('list'); // 'list' | 'grid'
   
   useEffect(() => {
     if (editId) {
@@ -99,6 +101,21 @@ export default function NewDeck() {
   //const addSideboard = (card) => {
   //  setSideboardArray(prev => [...prev, card]);
   //};
+
+  const groupCards = (list) => {
+    return Object.values(
+      list.reduce((acc, card) => {
+        const key = getCardKey(card);
+      
+        if (!acc[key]) {
+          acc[key] = { card, count: 0 };
+        }
+      
+        acc[key].count += 1;
+        return acc;
+      }, {})
+    );
+  };
 
   const markDirty = (setter) => (value) => {
     setter(value);
@@ -264,9 +281,35 @@ export default function NewDeck() {
     return <div className="row error">{messages[error]}</div>;
   };
 
-  // -------------------------
-  // RENDER LIST (keeps structure minimal change)
-  // -------------------------
+  // Rendering
+  const renderGrid = (list) => {
+    const grouped = groupCards(list);
+
+    return (
+      <div className="card_grid">
+        {grouped.map(({ card, count }) => (
+          <div
+            key={getCardKey(card)}
+            className="card_grid_item"
+            onClick={() => openViewer(list, card)}
+          >
+            <img src={card.Image} alt={card.Name} />
+
+            <div
+              className="card_grid_controls"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button onClick={() => decreaseCard(card)}>−</button>
+                <div className="card_count_badge_grid">
+                  {count}
+                </div>
+              <button onClick={() => increaseCard(card)}>+</button>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
   const renderList = (list, removeFn) => {
   const grouped = list.reduce((acc, card) => {
     const key = getCardKey(card);
@@ -323,16 +366,10 @@ export default function NewDeck() {
     ));
 };
 
-  // -------------------------
-  // UI (CSS STRUCTURE RESTORED)
-  // -------------------------
   return (
     <div className="container deck">
       {renderError()}
 
-      {/* ========================= */}
-      {/* DESKTOP LAYOUT (ALWAYS RENDERED) */}
-      {/* ========================= */}
       <div className="desktop_layout">
 
         <div className="deck_inputs row">
@@ -368,9 +405,6 @@ export default function NewDeck() {
           </div>
         </div>
 
-        
-
-        {/* DESCRIPTION */}
         <div className="deck_bottom">
           <label>Description</label>
           <textarea
@@ -380,8 +414,6 @@ export default function NewDeck() {
         </div>
 
         <div className="row">
-
-          {/* SEARCH */}
           <CardSearch openViewer={openViewer}
             getCount={getCount}
             onIncrease={increaseCard}
@@ -437,7 +469,6 @@ export default function NewDeck() {
 
           </div>
 
-          {/* MAIN DECK */}
           <div className="col-sm-4 deck_output">
             <div className="deck_output_header">
               <h5>Main Deck</h5>
@@ -449,7 +480,6 @@ export default function NewDeck() {
             </div>
           </div>
 
-          {/* MAYBE */}
           <div className="col-sm-4 deck_output">
             <div className="deck_output_header">
               <h5>Maybe</h5>
@@ -465,9 +495,6 @@ export default function NewDeck() {
 
       </div>
 
-      {/* ========================= */}
-      {/* MOBILE VIEW SWITCHER */}
-      {/* ========================= */}
       {isMobile && (
         <div className={`mobile_view_container ${animDir}`}>
 
@@ -481,25 +508,65 @@ export default function NewDeck() {
             >
         
           {view === 'search' && (
-            <CardSearch
-              openViewer={openViewer}
-              getCount={getCount}
-              onIncrease={increaseCard}
-              onDecrease={decreaseCard}
-            />
+            <div>
+              <div className="layout_switch">
+                <div
+                  className={`switch_track ${layout === 'grid' ? 'grid' : 'list'}`}
+                  onClick={() => setLayout(prev => prev === 'list' ? 'grid' : 'list')}
+                >
+                  <div className="switch_thumb" />
+                        
+                  <i className="fa fa-list switch_icon left" />
+                  <i className="fa fa-th switch_icon right" />
+                </div>
+              </div>
+              <CardSearch
+                layout={layout}
+                openViewer={openViewer}
+                getCount={getCount}
+                onIncrease={increaseCard}
+                onDecrease={decreaseCard}
+              />
+            </div>
           )}
 
           {view === 'main' && (
             <div className="deck_output">
+              <div className="layout_switch">
+                <div
+                  className={`switch_track ${layout === 'grid' ? 'grid' : 'list'}`}
+                  onClick={() => setLayout(prev => prev === 'list' ? 'grid' : 'list')}
+                >
+                  <div className="switch_thumb" />
+                        
+                  <i className="fa fa-list switch_icon left" />
+                  <i className="fa fa-th switch_icon right" />
+                </div>
+              </div>
               <h5>Main Deck</h5>
-              {renderList(mainDeckArray, removeCard)}
+              {layout === 'grid'
+                ? renderGrid(mainDeckArray)
+                : renderList(mainDeckArray, removeCard)}
             </div>
           )}
 
           {view === 'maybe' && (
             <div className="deck_output">
+              <div className="layout_switch">
+                <div
+                  className={`switch_track ${layout === 'grid' ? 'grid' : 'list'}`}
+                  onClick={() => setLayout(prev => prev === 'list' ? 'grid' : 'list')}
+                >
+                  <div className="switch_thumb" />
+                        
+                  <i className="fa fa-list switch_icon left" />
+                  <i className="fa fa-th switch_icon right" />
+                </div>
+              </div>
               <h5>Maybe</h5>
-              {renderList(maybeboardArray, removeMaybeboard)}
+              {layout === 'grid'
+                ? renderGrid(maybeboardArray)
+                : renderList(maybeboardArray, removeMaybeboard)}
             </div>
           )}
 

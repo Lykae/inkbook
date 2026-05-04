@@ -1282,8 +1282,9 @@ h4, label {
 
 h5 {
   font-family: "Roboto Slab", sans-serif;
-  font-size: 14px;
-  margin: 5px; }
+  font-size: 1.2em;
+  margin: 5px;
+  margin-bottom: 0.7em;  }
 
 .hand-card-animate:nth-of-type(1) {
   -webkit-animation: slideIn 0.1s;
@@ -1805,7 +1806,7 @@ footer {
           animation: fadeIn 1s; }
 
 .deck_output {
-  padding-top: 15px;
+  padding-top: 0.7em;
   background-color: #222; }
   .deck_output_header {
     display: -webkit-box;
