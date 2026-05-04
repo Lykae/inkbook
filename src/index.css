@@ -201,17 +201,6 @@ code {
   }
 }
 
-.mobile_topbar {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  background: #fff;
-  padding: 10px;
-  display: flex;
-  justify-content: flex-end;
-  border-bottom: 1px solid #ddd;
-}
-
 @media (max-width: 768px) {
   .deck h2 {
     margin-top: 60px;

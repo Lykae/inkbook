@@ -1538,7 +1538,6 @@ footer {
     background-color: #222;
     width: 200vw;
     height: 54px;
-    border: solid #495867;
     border-width: 2px 0;
     z-index: -10; }
   .deck_inputs_group {
@@ -1563,7 +1562,6 @@ footer {
 .deck_item {
   padding: 10px;;
   overflow: hidden;
-  border: 2px solid #495867;
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
   font-family: "Roboto", sans-serif;
@@ -1658,10 +1656,8 @@ footer {
     margin-top: 5px;
     font-weight: bold; }
   .deck_detail_colors {
-    border: 2px solid #495867;
     margin-bottom: 10px; }
     .deck_detail_colors_header {
-      border-bottom: 2px solid #495867;
       background-color: #e8f9f1;
       text-align: center;
       font-family: "Oswald", sans-serif;
@@ -1683,10 +1679,8 @@ footer {
       .deck_detail_colors_body svg {
         width: 90%; }
   .deck_detail_cmc {
-    border: 2px solid #495867;
     margin-bottom: 10px; }
     .deck_detail_cmc_header {
-      border-bottom: 2px solid #495867;
       background-color: #e8f9f1;
       text-align: center;
       font-family: "Oswald", sans-serif;
@@ -1695,10 +1689,8 @@ footer {
       color: black;
       padding: 10px; }
   .deck_detail_well {
-    border: 2px solid #495867;
     margin-bottom: 10px; }
     .deck_detail_well_header {
-      border-bottom: 2px solid #495867;
       background-color: #e8f9f1;
       text-align: center;
       font-family: "Oswald", sans-serif;
@@ -1814,8 +1806,7 @@ footer {
 
 .deck_output {
   padding-top: 15px;
-  background-color: #222;
-  height: 85vh; }
+  background-color: #222; }
   .deck_output_header {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -1832,7 +1823,6 @@ footer {
       font-family: "Roboto", sans-serif; }
   .deck_output_cards {
     overflow-y: scroll;
-    height: 90vh;
     font-family: "Roboto", sans-serif;
     overflow-x: hidden; }
     .deck_output_cards div {
@@ -1863,6 +1853,10 @@ footer {
   .deck_output {
     height: 90vh;
   }
+
+  .deck_output_cards {
+    height: 90vh;
+  }
 }
 
 .deck_output strong {
@@ -1879,8 +1873,7 @@ footer {
     width: 90vw;
     padding: 5px;
     height: 138px;
-    font-family: "Roboto", sans-serif;
-    border: 2px solid #495867; }
+    font-family: "Roboto", sans-serif; }
   .deck_bottom .deck_bottom_buttons {
     background-color: #e8f9f1;
     padding: 20px;
