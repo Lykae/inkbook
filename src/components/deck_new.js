@@ -4,8 +4,10 @@ import { useNavigate, useOutletContext } from 'react-router-dom';
 //import AnimateOnChange from 'react-animate-on-change';
 import { motion, AnimatePresence } from "framer-motion";
 
-import { createDeck } from '../features/decks/decksSlice';
+import { createDeck, updateDeck, fetchDeck } from '../features/decks/decksSlice';
 //import { selectCard } from '../features/cards/cardsSlice';
+
+import { useSearchParams } from 'react-router-dom';
 
 import CardSearch from './card_search';
 import CardViewer from './card_view';
@@ -18,7 +20,11 @@ export default function NewDeck() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const [searchParams] = useSearchParams();
+  const editId = searchParams.get('edit');
+
   const selectedCard = useSelector(state => state.cards.selectedCard);
+  
 
   const [deckName, setDeckName] = useState('');
   const [deckCreator, setDeckCreator] = useState('');
@@ -39,12 +45,44 @@ export default function NewDeck() {
 
   const [animDir, setAnimDir] = useState('right');
   const prevView = React.useRef(view);
+  
+  const selectedDeck = useSelector(state => state.decks.selectedDeck);
+  
+  useEffect(() => {
+    if (editId) {
+      dispatch(fetchDeck(editId));
+    }
+  }, [editId, dispatch]);
 
   useEffect(() => {
     const handler = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handler);
     return () => window.removeEventListener('resize', handler);
   }, []);
+
+  useEffect(() => {
+    if (!selectedDeck || !editId) return;
+
+    setDeckName(selectedDeck.name || '');
+    setDeckCreator(selectedDeck.creator || '');
+    setDeckFormat(selectedDeck.format || '');
+    setDeckDescription(selectedDeck.description || '');
+    setMainDeckArray(selectedDeck.cards || []);
+    setMaybeboardArray(selectedDeck.maybeboard || []);
+    setIsDirty(false);
+  }, [selectedDeck, editId]);
+
+  useEffect(() => {
+    if (!editId) {
+      setDeckName('');
+      setDeckCreator('');
+      setDeckFormat('');
+      setDeckDescription('');
+      setMainDeckArray([]);
+      setMaybeboardArray([]);
+      setIsDirty(false);
+    }
+  }, [editId]);
 
   // -------------------------
   // CARD ACTIONS (kept simple)
@@ -61,6 +99,11 @@ export default function NewDeck() {
   //const addSideboard = (card) => {
   //  setSideboardArray(prev => [...prev, card]);
   //};
+
+  const markDirty = (setter) => (value) => {
+    setter(value);
+    setIsDirty(true);
+  };
 
   const changeView = (next) => {
     if (next === view) return;
@@ -114,12 +157,14 @@ export default function NewDeck() {
   // -------------------------
   // SAVE
   // -------------------------
+
   const saveDeck = useCallback(async () => {
     if (!deckName) return setError('name');
     if (!deckFormat) return setError('format');
     if (mainDeckArray.length === 0) return setError('cards');
 
     const deck = {
+      id: editId ? Number(editId) : undefined,
       name: deckName,
       creator: deckCreator,
       format: deckFormat,
@@ -129,18 +174,13 @@ export default function NewDeck() {
       colors: [...new Set(mainDeckArray.map(c => c.color))]
     };
 
-    await dispatch(createDeck(deck));
-    navigate('/decks');
-  }, [
-    deckName,
-    deckCreator,
-    deckFormat,
-    deckDescription,
-    mainDeckArray,
-    maybeboardArray,
-    dispatch,
-    navigate
-  ]);
+    if (editId) {
+      await dispatch(updateDeck(deck));
+    } else {
+      await dispatch(createDeck(deck));
+    }
+
+  }, [deckName, deckCreator, deckFormat, deckDescription, mainDeckArray, maybeboardArray, editId, dispatch]);
 
   
 
@@ -300,7 +340,7 @@ export default function NewDeck() {
             <label>Deck Name</label>
             <input
               value={deckName}
-              onChange={(e) => setDeckName(e.target.value)}
+              onChange={(e) => markDirty(setDeckName)(e.target.value)}
             />
           </div>
 
@@ -308,7 +348,7 @@ export default function NewDeck() {
             <label>Created by</label>
             <input
               value={deckCreator}
-              onChange={(e) => setDeckCreator(e.target.value)}
+              onChange={(e) => markDirty(setDeckCreator)(e.target.value)}
             />
           </div>
 
@@ -316,7 +356,7 @@ export default function NewDeck() {
             <label>Deck Format</label>
             <select
               value={deckFormat}
-              onChange={(e) => setDeckFormat(e.target.value)}
+              onChange={(e) => markDirty(setDeckFormat)(e.target.value)}
             >
               <option value="">Select Format</option>
               {getFormats().map(format => (
@@ -335,7 +375,7 @@ export default function NewDeck() {
           <label>Description</label>
           <textarea
             value={deckDescription}
-            onChange={(e) => setDeckDescription(e.target.value)}
+            onChange={(e) => markDirty(setDeckDescription)(e.target.value)}
           />
         </div>
 
@@ -469,7 +509,7 @@ export default function NewDeck() {
                 <label>Deck Name</label>
                 <input
                   value={deckName}
-                  onChange={(e) => setDeckName(e.target.value)}
+                  onChange={(e) => markDirty(setDeckName)(e.target.value)}
                 />
               </div>
 
@@ -477,7 +517,7 @@ export default function NewDeck() {
                 <label>Created by</label>
                 <input
                   value={deckCreator}
-                  onChange={(e) => setDeckCreator(e.target.value)}
+                  onChange={(e) => markDirty(setDeckCreator)(e.target.value)}
                 />
               </div>
 
@@ -485,7 +525,7 @@ export default function NewDeck() {
                 <label>Deck Format</label>
                 <select
                   value={deckFormat}
-                  onChange={(e) => setDeckFormat(e.target.value)}
+                  onChange={(e) => markDirty(setDeckFormat)(e.target.value)}
                 >
                   <option value="">Select Format</option>
                   {getFormats().map(format => (
@@ -503,7 +543,7 @@ export default function NewDeck() {
           <label>Description</label>
           <textarea
             value={deckDescription}
-            onChange={(e) => setDeckDescription(e.target.value)}
+            onChange={(e) => markDirty(setDeckDescription)(e.target.value)}
           />
         </div>
 

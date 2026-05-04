@@ -51,10 +51,31 @@ export const createDeck = createAsyncThunk(
 
     saveDB(db);
 
+    const result = db.exec('SELECT last_insert_rowid() as id');
+    const id = result[0].values[0][0];
+      
     return {
-      id: Date.now(),
+      id,
       ...deck
     };
+  }
+);
+
+export const updateDeck = createAsyncThunk(
+  'decks/updateDeck',
+  async (deck) => {
+    const db = await initDB();
+
+    const data = JSON.stringify(deck);
+
+    db.run(
+      'UPDATE decks SET name = ?, data = ? WHERE id = ?',
+      [deck.name, data, deck.id]
+    );
+
+    saveDB(db);
+
+    return deck;
   }
 );
 
@@ -114,6 +135,19 @@ const decksSlice = createSlice({
       // SINGLE DECK
       .addCase(fetchDeck.fulfilled, (state, action) => {
         state.selectedDeck = action.payload;
+      })
+
+      // UPDATE
+      .addCase(updateDeck.fulfilled, (state, action) => {
+        const index = state.list.findIndex(d => d.id === action.payload.id);
+        if (index !== -1) {
+          state.list[index] = action.payload;
+        }
+      
+        // optional but good:
+        if (state.selectedDeck?.id === action.payload.id) {
+          state.selectedDeck = action.payload;
+        }
       });
   }
 });

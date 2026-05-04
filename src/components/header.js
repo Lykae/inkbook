@@ -7,6 +7,11 @@ export default function Header({
 }) {
   const location = useLocation();
   const isDeckBuilder = location.pathname === '/decks/new';
+  const isDeckDetail =
+    location.pathname.startsWith('/decks/') &&
+    location.pathname !== '/decks/new';
+
+  const deckId = location.pathname.split('/')[2];
 
   return (
     <header className="app_header">
@@ -44,6 +49,16 @@ export default function Header({
           >
             <i className="fa fa-floppy-o" />
           </button>
+        )}
+        
+        {isDeckDetail && (
+          <Link
+            to={`/decks/new?edit=${deckId}`}
+            className="icon_btn"
+            title="Edit Deck"
+          >
+            <i className="fa fa-pencil" />
+          </Link>
         )}
 
       </div>
