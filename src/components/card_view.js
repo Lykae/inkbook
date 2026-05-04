@@ -108,8 +108,14 @@ export default function CardViewer({
     const image = current.image || current.Image;
   
     return (
-      <div className="card-viewer-overlay">
-        <div className="card-viewer-content">
+      <div
+        className="card-viewer-overlay"
+        onClick={onClose}
+      >
+        <div
+          className="card-viewer-content"
+          onClick={(e) => e.stopPropagation()}
+        >
     
           {imageLoaded && (<div className="card-viewer-close" onClick={onClose}>
             ✕
