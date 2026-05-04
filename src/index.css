@@ -763,3 +763,140 @@ code {
 .switch_track:active .switch_thumb {
   transform: scale(0.9);
 }
+
+/* advanced search */
+.search_controls {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+}
+
+.advanced_btn {
+  background: #333;
+  color: #F6BE00;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+
+.advanced_actions button {
+  background-color: #F6BE00;
+  color: #222;
+
+  border: 1px solid #222;
+  border-radius: 6px;
+
+  padding: 6px 12px;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition: background-color 0.15s ease, color 0.15s ease;
+
+  user-select: none;
+}
+
+/* overlay */
+.advanced_overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+/* modal */
+.advanced_modal {
+  background: #1e1e1e;
+  padding: 20px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+}
+
+/* grid layout */
+.advanced_grid {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.advanced_actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.search_topbar {
+  display: flex;
+  justify-content: space-between;
+  margin-right: 70px;
+}
+
+/* search */
+.pagination_controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .pagination_controls {
+    margin-bottom: 100px; /* ensures it's above nav bar */
+  }
+}
+
+.card_search {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.card_search ul,
+.card_grid {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.card_search input {
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.pagination_button {
+  background-color: #F6BE00;
+  color: #222;
+
+  border: 1px solid #222;
+  border-radius: 6px;
+
+  padding: 6px 12px;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition: background-color 0.15s ease, color 0.15s ease;
+
+  user-select: none;
+}
+
+.pagination_button:hover {
+  background-color: #222;
+  color: #F6BE00;
+}
+
+.pagination_button:active {
+  opacity: 0.85;
+}
+
+.pagination_button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

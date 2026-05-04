@@ -2,38 +2,36 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { initDB } from '../../db/initDB';
 
-// -------------------------
-// FETCH FROM LORCANA API
-// -------------------------
 export const fetchCards = createAsyncThunk(
   'cards/fetchCards',
   async ({ name, cost, color, inkable, page = 1, pageSize = 100 }) => {
-    const params = new URLSearchParams();
 
+    const params = new URLSearchParams();
     const searchParts = [];
 
-    // NAME (Lorcana supports fuzzy name search like Name~Elsa)
-    if (name && name.trim()) {
-      searchParts.push(`Name~${name.trim()}`);
+    // NAME (contains search)
+    if (name?.trim()) {
+      searchParts.push(`name~${name.trim()}`);
     }
 
-    // COST (example: Cost~3, Cost<3, Cost>3)
+    // COST (exact or range if needed)
     if (cost !== undefined && cost !== null && cost !== '') {
-      searchParts.push(`Cost~${cost}`);
+      searchParts.push(`cost=${cost}`);
     }
 
-    // COLOR (Amber, Steel, etc.)
+    // COLOR
     if (color) {
-      searchParts.push(`Color~${color}`);
+      searchParts.push(`color=${color}`);
     }
 
-    // Inkable filter (API usually expects 1/0 or true/false depending on backend)
-    if (inkable !== undefined && inkable !== null) {
-      searchParts.push(`Inkable~${inkable ? 1 : 0}`);
+    // INKABLE
+    if (inkable !== undefined && inkable !== null && inkable !== '') {
+      searchParts.push(`Inkable=${inkable ? 1 : 0}`);
     }
 
+    // FINAL SEARCH STRING (IMPORTANT)
     if (searchParts.length > 0) {
-      params.append('search', searchParts.join(' '));
+      params.append('search', searchParts.join(';')); // 👈 FIX HERE
     }
 
     params.append('page', page);
@@ -41,24 +39,16 @@ export const fetchCards = createAsyncThunk(
 
     const url = `https://api.lorcana-api.com/cards/fetch?${params.toString()}`;
 
-    console.log('URL', url);
+    console.log('FINAL URL:', url);
 
     const res = await axios.get(url);
 
-    // API sometimes returns:
-    // - array directly
-    // - or { data: [...] }
-    const data = Array.isArray(res.data)
+    return Array.isArray(res.data)
       ? res.data
       : res.data?.data || [];
-
-    return data;
   }
 );
 
-// -------------------------
-// SAVE CARDS TO DB (optional cache layer)
-// -------------------------
 export const saveCardsToDB = createAsyncThunk(
   'cards/saveCardsToDB',
   async (cards) => {

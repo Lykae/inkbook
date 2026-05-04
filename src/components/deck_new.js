@@ -49,6 +49,8 @@ export default function NewDeck() {
   const selectedDeck = useSelector(state => state.decks.selectedDeck);
 
   const [layout, setLayout] = useState('list'); // 'list' | 'grid'
+
+  const [page, setPage] = useState(1);
   
   useEffect(() => {
     if (editId) {
@@ -414,10 +416,15 @@ export default function NewDeck() {
         </div>
 
         <div className="row">
-          <CardSearch openViewer={openViewer}
+          <CardSearch
+            layout={layout}
+            setLayout={setLayout}
+            openViewer={openViewer}
             getCount={getCount}
             onIncrease={increaseCard}
             onDecrease={decreaseCard}
+            page={page}
+            setPage={setPage}
           />
 
           <div className="col-sm-4 selected_card">
@@ -522,10 +529,13 @@ export default function NewDeck() {
               </div>
               <CardSearch
                 layout={layout}
+                setLayout={setLayout}
                 openViewer={openViewer}
                 getCount={getCount}
                 onIncrease={increaseCard}
                 onDecrease={decreaseCard}
+                page={page}
+                setPage={setPage}
               />
             </div>
           )}

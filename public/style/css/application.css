@@ -1852,12 +1852,14 @@ footer {
 
 @media (max-width: 767px) {
   .deck_output {
-    height: 90vh;
+    height: auto;
+    max-height: 90vh;
     padding: 0.7em;
   }
 
   .deck_output_cards {
-    height: 90vh;
+    height: auto;
+    max-height: 90vh;
   }
 }
 
@@ -1982,7 +1984,8 @@ footer {
 
 .card_search {
   background-color: #222;
-  height: 85vh; }
+  height: auto;
+  max-height: 95vh; }
   .card_search input {
     background-color: #F6BE00;
     color: #222;
