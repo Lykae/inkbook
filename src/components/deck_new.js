@@ -312,61 +312,63 @@ export default function NewDeck() {
       </div>
     );
   };
+  
   const renderList = (list, removeFn) => {
-  const grouped = list.reduce((acc, card) => {
-    const key = getCardKey(card);
-
-    if (!acc[key]) {
-      acc[key] = { card, count: 0 };
-    }
-
-    acc[key].count += 1;
-    return acc;
-  }, {});
-
-  return Object.values(grouped)
-    .sort((a, b) => (a.card.Name || '').localeCompare(b.card.Name || ''))
-    .map(({ card, count }) => (
-      <div key={getCardKey(card)} className="deck_row">
-
-        <div
-          className="card_name"
-          onClick={() => openViewer(list, card)}
-        >
-          <strong className="card_title">
-
-            <span
-              className={`card_count ${card.Inkable ? 'inkable' : 'not_inkable'}`}
+    const grouped = list.reduce((acc, card) => {
+      const key = getCardKey(card);
+    
+      if (!acc[key]) {
+        acc[key] = { card, count: 0 };
+      }
+    
+      acc[key].count += 1;
+      return acc;
+    }, {});
+  
+    return Object.values(grouped)
+      .sort((a, b) => (a.card.Name || '').localeCompare(b.card.Name || ''))
+      .map(({ card, count }) => (
+        <div key={getCardKey(card)} className="deck_row"
+            onClick={() => openViewer(list, card)}>
+        
+          <div
+            className="card_name"
+          >
+            <strong className="card_title">
+      
+              <span
+                className={`card_count ${card.Inkable ? 'inkable' : 'not_inkable'}`}
+              >
+                {count}
+              </span>
+      
+              {card.Name}
+      
+            </strong>
+          </div>
+      
+          <div className="card_controls"
+            onClick={(e) => e.stopPropagation()}>
+            <button
+              className="ctrl_btn minus"
+              onClick={() => decreaseCard(card)}
             >
-              {count}
-            </span>
-
-            {card.Name}
-
-          </strong>
+              −
+            </button>
+      
+            <span className="count_display">{count}</span>
+      
+            <button
+              className="ctrl_btn plus"
+              onClick={() => increaseCard(card)}
+            >
+              +
+            </button>
+          </div>
+      
         </div>
-
-        <div className="card_controls">
-          <button
-            className="ctrl_btn minus"
-            onClick={() => decreaseCard(card)}
-          >
-            −
-          </button>
-
-          <span className="count_display">{count}</span>
-
-          <button
-            className="ctrl_btn plus"
-            onClick={() => increaseCard(card)}
-          >
-            +
-          </button>
-        </div>
-
-      </div>
-    ));
-};
+      ));
+  };
 
   return (
     <div className="container deck">

@@ -158,13 +158,13 @@ export default function CardSearch({
     }
   }, [showAdvanced]);
 
-  useEffect(() => {
-    runSearch(term, filters, page);
-  }, [page]);
-
-  useEffect(() => {
-    if (page < 1) setPage(1);
-  }, [page]);
+  //useEffect(() => {
+  //  runSearch(term, filters, page);
+  //}, [page]);
+//
+  //useEffect(() => {
+  //  if (page < 1) setPage(1);
+  //}, [page]);
 
   const renderGrid = () => (
     <div className="card_grid">
@@ -238,13 +238,13 @@ export default function CardSearch({
                 <li
                   key={`${card.Name}-${card.Set_Name}-${i}`}
                   className="deck_row search_row"
+                  onClick={() => {
+                    dispatch(selectCard(card));
+                    if (openViewer) openViewer(filteredCards, card);
+                  }}
                 >
                   <div
                     className="card_name"
-                    onClick={() => {
-                      dispatch(selectCard(card));
-                      if (openViewer) openViewer(filteredCards, card);
-                    }}
                   >
                     <strong className="card_title">
                   
@@ -259,7 +259,8 @@ export default function CardSearch({
                     </strong>
                   </div>
                   
-                  <div className="card_controls">
+                  <div className="card_controls"
+                    onClick={(e) => e.stopPropagation()}>
                     <button
                       className="ctrl_btn minus"
                       onClick={(e) => {
