@@ -26,9 +26,9 @@ export default function CardViewer({
 
     const count = current && getCount ? getCount(current) : 0;
 
-    useEffect(() => {
-      setImageLoaded(false);
-    }, [currentIndex]);
+    //useEffect(() => {
+    //  setImageLoaded(false);
+    //}, [currentIndex]);
     
     useEffect(() => {
       if (!open) return;
@@ -117,9 +117,9 @@ export default function CardViewer({
           onClick={(e) => e.stopPropagation()}
         >
     
-          {imageLoaded && (<div className="card-viewer-close" onClick={onClose}>
+          <div className="card-viewer-close" onClick={onClose}>
             ✕
-          </div>)}
+          </div>
     
           <div
             className="card-swipe-area"
@@ -129,15 +129,16 @@ export default function CardViewer({
             onPointerUp={onPointerUp}
             style={style}
           >
-            <img
-              src={image}
-              alt={name}
-              onLoad={() => setImageLoaded(true)}
-              style={{ opacity: imageLoaded ? 1 : 0 }}
-            />
+            <div className="card-image-wrapper">
+              <img
+                key={image}
+                src={image}
+                alt={name}
+              />
+            </div>
           </div>
 
-        {imageLoaded && (<div className="card-viewer-actions">
+        <div className="card-viewer-actions">
             {showEditControls && (<button
               className={pressed === 'dec' ? 'pressed' : ''}
               onClick={() => handlePress(onDecrease, current, 'dec')}
@@ -163,7 +164,7 @@ export default function CardViewer({
               +?
             </button>
             )}
-        </div>)}
+        </div>
     
         </div>
       </div>

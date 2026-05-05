@@ -36,7 +36,8 @@ export default function CardSearch({
     minLore: '',
     maxLore: '',
     set: [],
-    regexText: ''
+    bodyText: '',
+    useRegex: false
   });
 
   const [filters, setFilters] = useState(filtersDraft);
@@ -191,24 +192,36 @@ export default function CardSearch({
 
   const loading = useSelector(state => state.cards.loading);
 
-  const applyRegexFilter = (cards, regexText) => {
-    if (!regexText) return cards;
+  const applyBodyTextFilter = (cards, bodyText, useRegex) => {
+    if (!bodyText) return cards;
 
     try {
-      const regex = new RegExp(regexText, 'i');
+      if (useRegex) {
+        const regex = new RegExp(bodyText, 'i');
 
-      return cards.filter(card => {
-        const text = card.Body_Text || '';
-        return regex.test(text);
-      });
+        return cards.filter(card => {
+          const text = card.Body_Text || '';
+          return regex.test(text);
+        });
+      } else {
+        const search = bodyText.toLowerCase();
 
+        return cards.filter(card => {
+          const text = (card.Body_Text || '').toLowerCase();
+          return text.includes(search);
+        });
+      }
     } catch (err) {
       // invalid regex
       return cards;
     }
   };
 
-  const filteredCards = applyRegexFilter(foundCards, filters.regexText);
+  const filteredCards = applyBodyTextFilter(
+    foundCards,
+    filters.bodyText,
+    filters.useRegex
+  );
 
   const buildSearchString = (filters) => {
     const clauses = [];
@@ -264,12 +277,17 @@ export default function CardSearch({
   const searchRef = useRef(
     _.debounce((term, filters, page = 1) => {
       const search = buildSearchString(filters);
+      const finalSearch = [
+        term?.trim() ? `name~${term.trim()}` : null,
+        search || null
+      ]
+        .filter(Boolean)
+        .join(';');
 
-      console.log('SEARCH STRING:', search);
+      console.log('SEARCH STRING:', finalSearch);
 
       dispatch(fetchCards({
-        name: term?.trim() ? term : undefined,
-        search: search || undefined,
+        search: finalSearch || undefined,
         page
       }));
     }, 300)
@@ -300,7 +318,8 @@ export default function CardSearch({
       minLore: '',
       maxLore: '',
       set: [],
-      regexText: ''
+      bodyText: '',
+      useRegex: false
     });
   };
 

@@ -281,6 +281,17 @@ export default function NewDeck() {
     return <div className="row error">{messages[error]}</div>;
   };
 
+  const CardImage = ({ src, alt, extraKey }) => {
+    return (
+      <img
+        key={extraKey ? `${src}-${extraKey}` : src}
+        src={src}
+        alt={alt}
+        style={{ opacity: 1 }}
+      />
+    );
+  };
+
   // Rendering
   const renderGrid = (list) => {
     const grouped = groupCards(list);
@@ -293,7 +304,11 @@ export default function NewDeck() {
             className="card_grid_item"
             onClick={() => openViewer(list, card)}
           >
-            <img src={card.Image} alt={card.Name} />
+            <CardImage
+              src={card.Image}
+              alt={card.Name}
+              extraKey={view}
+            />
 
             <div
               className="card_grid_controls"
@@ -508,9 +523,9 @@ export default function NewDeck() {
           <AnimatePresence mode="wait">
             <motion.div
               key={view}
-              initial={{ x: 300, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: -300, opacity: 0 }}
+              initial={{ x: 300}}
+              animate={{ x: 0}}
+              exit={{ x: -300}}
               transition={{ duration: 0.3 }}
             >
         

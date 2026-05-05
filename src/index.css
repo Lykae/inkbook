@@ -78,6 +78,20 @@ code {
   pointer-events: none;
 }
 
+.card-image-wrapper {
+  height: 65vh;
+  width: 100%;
+  aspect-ratio: 7 / 10;
+  position: relative;
+}
+
+.card-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
 @media (max-width: 767px) {
   .deck_detail_active_card {
     display: none;
@@ -822,7 +836,7 @@ code {
 .advanced_grid {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 0.2em;
 }
 
 .filter_row {
@@ -1043,8 +1057,8 @@ code {
   cursor: pointer;
   user-select: none;
   white-space: nowrap;
-  width: 2em;
-  margin-right: 4em;
+  width: auto;
+  margin-right: 0;
 }
 
 .regex_checkbox input {
@@ -1064,6 +1078,7 @@ input[type="checkbox"] {
   -webkit-appearance: auto;
   -moz-appearance: auto;
   accent-color: #F6BE00;
+  flex-shrink: unset !important;
 }
 
 /* search */
