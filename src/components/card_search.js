@@ -23,7 +23,6 @@ export default function CardSearch({
 
   const pageSize = 100;
   const hasNextPage = foundCards.length === pageSize;
-  const [allCards, setAllCards] = useState([]);
   const allCardsCacheRef = useRef(null);
   const cacheKeyRef = useRef('');
   const [allCardsCache, setAllCardsCache] = useState({
@@ -382,7 +381,6 @@ export default function CardSearch({
 
     if (hasBodyText) {
       const cards = await fetchAllCardsCached(nextFilters);
-      setAllCards(cards);
     } else {
       searchRef.current(nextTerm, nextFilters, nextPage);
     }
