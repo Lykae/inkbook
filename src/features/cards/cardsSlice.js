@@ -4,34 +4,15 @@ import { initDB } from '../../db/initDB';
 
 export const fetchCards = createAsyncThunk(
   'cards/fetchCards',
-  async ({ name, cost, color, inkable, page = 1, pageSize = 100 }) => {
-
+  async ({ name, search, page = 1, pageSize = 100 }) => {
     const params = new URLSearchParams();
-    const searchParts = [];
 
-    // NAME (contains search)
     if (name?.trim()) {
-      searchParts.push(`name~${name.trim()}`);
+      params.append('name', name.trim());
     }
 
-    // COST (exact or range if needed)
-    if (cost !== undefined && cost !== null && cost !== '') {
-      searchParts.push(`cost=${cost}`);
-    }
-
-    // COLOR
-    if (color) {
-      searchParts.push(`color=${color}`);
-    }
-
-    // INKABLE
-    if (inkable !== undefined && inkable !== null && inkable !== '') {
-      searchParts.push(`Inkable=${inkable ? 1 : 0}`);
-    }
-
-    // FINAL SEARCH STRING (IMPORTANT)
-    if (searchParts.length > 0) {
-      params.append('search', searchParts.join(';')); // 👈 FIX HERE
+    if (search) {
+      params.append('search', search);
     }
 
     params.append('page', page);
