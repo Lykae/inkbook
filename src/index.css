@@ -1091,7 +1091,7 @@ input[type="checkbox"] {
 
 @media (max-width: 768px) {
   .pagination_controls {
-    margin-bottom: 100px; /* ensures it's above nav bar */
+    margin-bottom: 4em;
   }
 }
 

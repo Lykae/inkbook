@@ -23,6 +23,13 @@ export default function CardSearch({
 
   const pageSize = 100;
   const hasNextPage = foundCards.length === pageSize;
+  const [allCards, setAllCards] = useState([]);
+  const allCardsCacheRef = useRef(null);
+  const cacheKeyRef = useRef('');
+  const [allCardsCache, setAllCardsCache] = useState({
+    key: null,
+    cards: []
+  });
 
   const [filtersDraft, setFiltersDraft] = useState({
     color: [],
@@ -43,6 +50,30 @@ export default function CardSearch({
   const [filters, setFilters] = useState(filtersDraft);
 
   const [term, setTerm] = useState('');
+
+  const buildCacheKey = (term, filters) => {
+    const safeTerm =
+      typeof term === 'string'
+        ? term.trim()
+        : '';
+      
+    const f = filters || {};
+
+    return JSON.stringify({
+      term: safeTerm,
+      color: f.color,
+      type: f.type,
+      rarity: f.rarity,
+      inkable: f.inkable,
+      set: f.set,
+      minCost: f.minCost,
+      maxCost: f.maxCost,
+      minStrength: f.minStrength,
+      maxStrength: f.maxStrength,
+      minLore: f.minLore,
+      maxLore: f.maxLore
+    });
+  };
 
   const SET_OPTIONS = [
     { key: 'The First Chapter', label: 'Set 1' },
@@ -217,60 +248,72 @@ export default function CardSearch({
     }
   };
 
+  const baseCards = filters.bodyText
+    ? allCardsCache.cards
+    : foundCards;
+
   const filteredCards = applyBodyTextFilter(
-    foundCards,
+    baseCards,
     filters.bodyText,
     filters.useRegex
   );
 
-  const buildSearchString = (filters) => {
+  const buildSearchString = (filters = {}) => {
+    const {
+      color = [],
+      rarity = [],
+      set = [],
+      type = '',
+      inkable = '',
+      minCost,
+      maxCost,
+      minStrength,
+      maxStrength,
+      minLore,
+      maxLore
+    } = filters;
+  
     const clauses = [];
-
-    if (filters.color?.length) {
-      if (filters.color.length === 1) {
-        clauses.push(`color=${filters.color[0]}`);
+  
+    if (color.length) {
+      if (color.length === 1) {
+        clauses.push(`color=${color[0]}`);
       } else {
-        clauses.push(
-          `(${filters.color.map(c => `color=${c}`).join(';|')};)`
-        );
+        clauses.push(`(${color.map(c => `color=${c}`).join(';|')};)`);
       }
     }
-    if (filters.type) clauses.push(`type=${filters.type}`);
-    if (filters.rarity.length > 0) {
-      if (filters.rarity.length === 1) {
-        clauses.push(`rarity=${filters.rarity[0]}`);
+  
+    if (type) clauses.push(`type=${type}`);
+  
+    if (rarity.length) {
+      if (rarity.length === 1) {
+        clauses.push(`rarity=${rarity[0]}`);
       } else {
-        clauses.push(
-          `(${filters.rarity.map(r => `rarity=${r}`).join(';|')};)`
-        );
+        clauses.push(`(${rarity.map(r => `rarity=${r}`).join(';|')};)`);
       }
     }
-
-    if (filters.inkable !== '') {
-      clauses.push(
-        `inkable=${filters.inkable === 'true' ? 1 : 0}`
-      );
+  
+    if (inkable !== '') {
+      clauses.push(`inkable=${inkable === 'true' ? 1 : 0}`);
     }
-
-    if (filters.minCost) clauses.push(`cost>=${filters.minCost}`);
-    if (filters.maxCost) clauses.push(`cost<=${filters.maxCost}`);
-
-    if (filters.minStrength) clauses.push(`strength>=${filters.minStrength}`);
-    if (filters.maxStrength) clauses.push(`strength<=${filters.maxStrength}`);
-
-    if (filters.minLore) clauses.push(`lore>=${filters.minLore}`);
-    if (filters.maxLore) clauses.push(`lore<=${filters.maxLore}`);
-
-    if (filters.set?.length) {
-      if (filters.set.length === 1) {
-        clauses.push(`set_name~${filters.set[0]}`);
+  
+    if (minCost) clauses.push(`cost>=${minCost}`);
+    if (maxCost) clauses.push(`cost<=${maxCost}`);
+  
+    if (minStrength) clauses.push(`strength>=${minStrength}`);
+    if (maxStrength) clauses.push(`strength<=${maxStrength}`);
+  
+    if (minLore) clauses.push(`lore>=${minLore}`);
+    if (maxLore) clauses.push(`lore<=${maxLore}`);
+  
+    if (set.length) {
+      if (set.length === 1) {
+        clauses.push(`set_name~${set[0]}`);
       } else {
-        clauses.push(
-          `(${filters.set.map(s => `set_name~${s}`).join(';|')};)`
-        );
+        clauses.push(`(${set.map(s => `set_name~${s}`).join(';|')};)`);
       }
     }
-
+  
     return clauses.join(';');
   };
 
@@ -298,10 +341,84 @@ export default function CardSearch({
     searchRef.current(nextTerm, nextFilters, nextPage);
   };
 
-  const handleApply = () => {
+  const fetchAllCardsCached = async (filters) => {
+    const key = buildCacheKey(filters);
+    
+    // return cache if valid
+    if (allCardsCacheRef.current && cacheKeyRef.current === key) {
+      return allCardsCacheRef.current;
+    }
+  
+    const pageSizeMax = 1000;
+    let page = 1;
+    let all = [];
+  
+    while (true) {
+      const result = await dispatch(fetchCards({
+        search: buildSearchString(filters),
+        page,
+        pageSize: pageSizeMax
+      })).unwrap();
+    
+      if (!result?.length) break;
+    
+      all = all.concat(result);
+    
+      if (result.length < pageSizeMax) break;
+    
+      page++;
+    }
+  
+    // store cache
+    allCardsCacheRef.current = all;
+    cacheKeyRef.current = key;
+  
+    return all;
+  };
+
+  const loadCardsForSearch = async (nextTerm = term, nextFilters = filters, nextPage = 1) => {
+    const hasBodyText =
+      nextFilters.bodyText && nextFilters.bodyText.trim() !== '';
+
+    if (hasBodyText) {
+      const cards = await fetchAllCardsCached(nextFilters);
+      setAllCards(cards);
+    } else {
+      searchRef.current(nextTerm, nextFilters, nextPage);
+    }
+  };
+
+  const handleApply = async () => {
     setFilters(filtersDraft);
     setPage(1);
-    runSearch(term, filtersDraft, 1);
+
+    const hasBodyText =
+      filtersDraft.bodyText && filtersDraft.bodyText.trim() !== '';
+
+    const cacheKey = buildCacheKey(term, filtersDraft);
+
+    if (hasBodyText) {
+      if (allCardsCache.key === cacheKey) {
+        console.log('Using cached full dataset');
+      } else {
+        console.log('Fetching full dataset...');
+
+        const cards = await fetchAllCardsCached(
+          dispatch,
+          buildSearchString,
+          filtersDraft,
+          term
+        );
+
+        setAllCardsCache({
+          key: cacheKey,
+          cards
+        });
+      }
+    } else {
+      runSearch(term, filtersDraft, 1);
+    }
+
     setShowAdvanced(false);
   };
 
@@ -321,6 +438,9 @@ export default function CardSearch({
       bodyText: '',
       useRegex: false
     });
+
+    allCardsCacheRef.current = null;
+    cacheKeyRef.current = '';
   };
 
   useEffect(() => {
@@ -330,7 +450,7 @@ export default function CardSearch({
   }, [showAdvanced, filters]);
 
   //useEffect(() => {
-  //  runSearch(term, filters, page);
+  //  loadCardsForSearch(term, filters, page);
   //}, [page]);
 //
   //useEffect(() => {
@@ -388,7 +508,7 @@ export default function CardSearch({
         onChange={(e) => {
           setTerm(e.target.value);
           setPage(1);
-          runSearch(e.target.value, filters, 1);;
+          loadCardsForSearch(e.target.value, filters, 1);;
         }}
       />
 
@@ -472,7 +592,7 @@ export default function CardSearch({
             onClick={() => {
               setPage(p => {
                 const next = Math.max(1, p - 1);
-                runSearch(term, filters, next);
+                loadCardsForSearch(term, filters, next);
                 return next;
               });
             }}
@@ -488,7 +608,7 @@ export default function CardSearch({
             onClick={() => {
               setPage(p => {
                 const next = p + 1;
-                runSearch(term, filters, next);
+                loadCardsForSearch(term, filters, next);
                 return next;
               });
             }}
