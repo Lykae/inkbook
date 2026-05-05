@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, useNavigate } from 'react-router-dom';
 //import AnimateOnChange from 'react-animate-on-change';
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -18,6 +18,7 @@ import { getCardKey } from '../helpers/getCardKey';
 
 export default function NewDeck() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [searchParams] = useSearchParams();
   const editId = searchParams.get('edit');
@@ -194,17 +195,19 @@ export default function NewDeck() {
     if (editId) {
       await dispatch(updateDeck(deck));
     } else {
-      await dispatch(createDeck(deck));
+      const result = await dispatch(createDeck(deck));
+      console.log("createresult", result);  
+      navigate(`/decks/new?edit=${result.payload.id}`);
     }
 
-  }, [deckName, deckCreator, deckFormat, deckDescription, mainDeckArray, maybeboardArray, editId, dispatch]);
+  }, [deckName, deckCreator, deckFormat, deckDescription, mainDeckArray, maybeboardArray, editId, dispatch, navigate]);
 
   
 
   const { setCanSave, setOnSave } = useOutletContext();
   useEffect(() => {
     setCanSave(isDirty);
-    setOnSave(() => saveDeck);
+    setOnSave(saveDeck);
   }, [isDirty, saveDeck, setCanSave, setOnSave]);
 
   //mobile card view

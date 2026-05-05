@@ -44,19 +44,27 @@ export const createDeck = createAsyncThunk(
 
     const data = JSON.stringify(deck);
 
-    db.run(
-      'INSERT INTO decks (name, data) VALUES (?, ?)',
-      [deck.name, data]
+    await db.run(
+      "INSERT INTO decks (name, data) VALUES (:name, :data)",
+      {
+        ":name": deck.name,
+        ":data": data
+      }
     );
 
-    saveDB(db);
+    const result = await db.exec("SELECT last_insert_rowid() as id");
 
-    const result = db.exec('SELECT last_insert_rowid() as id');
-    const id = result[0].values[0][0];
-      
+    console.log("selectresult", result);
+
+    const id = result?.[0]?.values?.[0]?.[0];
+
+    console.log("resultid", id);
+
+    await saveDB(db);
+
     return {
-      id,
-      ...deck
+      ...deck,
+      id
     };
   }
 );
@@ -68,12 +76,12 @@ export const updateDeck = createAsyncThunk(
 
     const data = JSON.stringify(deck);
 
-    db.run(
+    await db.run(
       'UPDATE decks SET name = ?, data = ? WHERE id = ?',
       [deck.name, data, deck.id]
     );
 
-    saveDB(db);
+    await saveDB(db);
 
     return deck;
   }
