@@ -272,9 +272,9 @@ export default function CardSearch({
       minLore,
       maxLore
     } = filters;
-  
+
     const clauses = [];
-  
+
     if (color.length) {
       if (color.length === 1) {
         clauses.push(`color=${color[0]}`);
@@ -282,9 +282,9 @@ export default function CardSearch({
         clauses.push(`(${color.map(c => `color=${c}`).join(';|')};)`);
       }
     }
-  
+
     if (type) clauses.push(`type=${type}`);
-  
+
     if (rarity.length) {
       if (rarity.length === 1) {
         clauses.push(`rarity=${rarity[0]}`);
@@ -292,20 +292,20 @@ export default function CardSearch({
         clauses.push(`(${rarity.map(r => `rarity=${r}`).join(';|')};)`);
       }
     }
-  
+
     if (inkable !== '') {
       clauses.push(`inkable=${inkable === 'true' ? 1 : 0}`);
     }
-  
+
     if (minCost) clauses.push(`cost>=${minCost}`);
     if (maxCost) clauses.push(`cost<=${maxCost}`);
-  
+
     if (minStrength) clauses.push(`strength>=${minStrength}`);
     if (maxStrength) clauses.push(`strength<=${maxStrength}`);
-  
+
     if (minLore) clauses.push(`lore>=${minLore}`);
     if (maxLore) clauses.push(`lore<=${maxLore}`);
-  
+
     if (set.length) {
       if (set.length === 1) {
         clauses.push(`set_name~${set[0]}`);
@@ -313,7 +313,7 @@ export default function CardSearch({
         clauses.push(`(${set.map(s => `set_name~${s}`).join(';|')};)`);
       }
     }
-  
+
     return clauses.join(';');
   };
 
@@ -392,6 +392,8 @@ export default function CardSearch({
     setFilters(filtersDraft);
     setPage(1);
 
+    setShowAdvanced(false);
+
     const hasBodyText =
       filtersDraft.bodyText && filtersDraft.bodyText.trim() !== '';
 
@@ -418,8 +420,6 @@ export default function CardSearch({
     } else {
       runSearch(term, filtersDraft, 1);
     }
-
-    setShowAdvanced(false);
   };
 
   const handleReset = () => {
