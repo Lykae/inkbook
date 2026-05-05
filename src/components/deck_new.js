@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useOutletContext } from 'react-router-dom';
+import { useOutletContext } from 'react-router-dom';
 //import AnimateOnChange from 'react-animate-on-change';
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -18,7 +18,6 @@ import { getCardKey } from '../helpers/getCardKey';
 
 export default function NewDeck() {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const [searchParams] = useSearchParams();
   const editId = searchParams.get('edit');
@@ -32,7 +31,6 @@ export default function NewDeck() {
   const [deckDescription, setDeckDescription] = useState('');
 
   const [mainDeckArray, setMainDeckArray] = useState([]);
-  //const [sideboardArray, setSideboardArray] = useState([]);
   const [maybeboardArray, setMaybeboardArray] = useState([]);
 
   const [error, setError] = useState(null);

@@ -125,6 +125,7 @@ export default function CardSearch({
   );
 
   const runSearch = (nextTerm = term, nextFilters = filters, nextPage = page) => {
+    setSearchSubmitted(true);
     searchRef.current(nextTerm, nextFilters, nextPage);
   };
 
@@ -156,7 +157,7 @@ export default function CardSearch({
     if (showAdvanced) {
       setFiltersDraft(filters);
     }
-  }, [showAdvanced]);
+  }, [showAdvanced, filters]);
 
   //useEffect(() => {
   //  runSearch(term, filters, page);
