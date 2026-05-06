@@ -66,7 +66,7 @@ export default function DeckDetail() {
     const seen = new Set();
 
     return cardList.filter((card) => {
-      const key = `${card.name}-${card.cost}-${card.set_name}`;
+      const key = getCardKey(card);
 
       if (seen.has(key)) return false;
       seen.add(key);
@@ -95,7 +95,7 @@ export default function DeckDetail() {
     const counts = {};
 
     cardList.forEach(card => {
-      const key = `${card.name}-${card.cost}-${card.set_name}`;
+      const key = getCardKey(card);
 
       if (!counts[key]) {
         counts[key] = { card, count: 0 };
@@ -112,33 +112,6 @@ export default function DeckDetail() {
     setCurrentIndex(0);
   };
 
-  const renderCards = (filterFn = () => true) => {
-    const filtered = cardList.filter(filterFn);
-
-    if (!filtered.length) return <span>None</span>;
-
-    const counts = filtered.reduce((acc, card) => {
-      const key = `${card.name}-${card.cost}-${card.set_name}`;
-
-      if (!acc[key]) {
-        acc[key] = { card, count: 0 };
-      }
-
-      acc[key].count++;
-      return acc;
-    }, {});
-
-    return Object.values(counts).map(({ card, count }) => (
-      <span
-        key={`${card.name}-${card.cost}-${card.set_name}`}
-        onClick={() => handleCardClick(card)}
-      >
-        {count}x {card.name}
-        <br />
-      </span>
-    ));
-  };
-
   const renderMobileGrid = () => {
     const grouped = getGroupedCards();
 
@@ -146,7 +119,7 @@ export default function DeckDetail() {
       <div className="mobile_card_grid">
         {grouped.map(({ card, count }) => (
           <div
-            key={`${card.name}-${card.cost}-${card.set_name}`}
+            key={getCardKey(card)}
             className="mobile_card_item"
             onClick={() => handleCardClick(card)}
           >
@@ -306,7 +279,7 @@ export default function DeckDetail() {
     return <h3 className="loading">loading deck...</h3>;
   }
 
-  const creator = deck.creator || 'Anonymous';
+  //const creator = deck.creator || 'Anonymous';
 
   return (
     <div className="container deck_detail">

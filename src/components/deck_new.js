@@ -226,8 +226,10 @@ export default function NewDeck() {
       return true;
     });
 
+    const clickedKey = getCardKey(clickedCard);
+
     const index = uniqueCards.findIndex(
-      c => (c.Name || c.name) === (clickedCard.Name || clickedCard.name)
+      c => getCardKey(c) === clickedKey
     );
 
     setViewerCards(uniqueCards);

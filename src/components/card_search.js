@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import _ from 'lodash';
 
 import { fetchCards, selectCard } from '../features/cards/cardsSlice';
+import { getCardKey } from '../helpers/getCardKey';
 
 export default function CardSearch({
   layout,
@@ -465,7 +466,7 @@ export default function CardSearch({
     <div className="card_grid">
       {filteredCards.map((card, i) => (
         <div
-          key={`${card.Name}-${card.Set_Name}-${i}`}
+          key={getCardKey(card)}
           className="card_grid_item"
           onClick={() => {
             dispatch(selectCard(card));
@@ -531,7 +532,7 @@ export default function CardSearch({
             ) : (
               filteredCards?.map((card, i) => (
                 <li
-                  key={`${card.Name}-${card.Set_Name}-${i}`}
+                  key={getCardKey(card)}
                   className="deck_row search_row"
                   onClick={() => {
                     dispatch(selectCard(card));
