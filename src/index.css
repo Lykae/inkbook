@@ -272,9 +272,10 @@ code {
   color: #F6BE00;
   padding: 6px;
   transition: 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.icon_btn:hover {
+.icon_btn:active {
   transform: scale(1.1);
 }
 
@@ -631,16 +632,20 @@ code {
 
 .hand-card {
   transition: transform 0.25s ease, margin 0.25s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .hand-card:first-child {
   margin-left: 0;
 }
 
+/*
 .hand-card:hover {
   transform: translateY(-15px) scale(1.08);
   z-index: 10;
 }
+
+*/
 
 .hand-card img {
   width: 100%;
@@ -791,6 +796,7 @@ code {
   border: none;
   padding: 6px 10px;
   border-radius: 6px;
+  margin-right: 0.5em;
 }
 
 .advanced_actions button {
@@ -1132,7 +1138,7 @@ input[type="checkbox"] {
   user-select: none;
 }
 
-.pagination_button:hover {
+.pagination_button:active {
   background-color: #222;
   color: #F6BE00;
 }
@@ -1144,4 +1150,9 @@ input[type="checkbox"] {
 .pagination_button:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+/* buttons */
+button {
+  -webkit-tap-highlight-color: transparent;
 }

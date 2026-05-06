@@ -4,7 +4,7 @@ import { initDB } from '../../db/initDB';
 
 export const fetchCards = createAsyncThunk(
   'cards/fetchCards',
-  async ({ name, search, page = 1, pageSize = 100 }) => {
+  async ({ name, search, page = 1, pageSize = 100, orderby, sortdirection }) => {
     const params = new URLSearchParams();
 
     if (name?.trim()) {
@@ -13,6 +13,14 @@ export const fetchCards = createAsyncThunk(
 
     if (search) {
       params.append('search', search);
+    }
+
+    if (orderby) {
+      params.append('orderby', orderby);
+    }
+
+    if (orderby && sortdirection) {
+      params.append('sortdirection', sortdirection);
     }
 
     params.append('page', page);

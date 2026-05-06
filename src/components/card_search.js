@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import _ from 'lodash';
 
@@ -22,14 +22,20 @@ export default function CardSearch({
 
   const [showAdvanced, setShowAdvanced] = useState(false);
 
+  const [useClientPaging, setUseClientPaging] = useState(false);
+
   const pageSize = 100;
-  const hasNextPage = foundCards.length === pageSize;
-  const allCardsCacheRef = useRef(null);
-  const cacheKeyRef = useRef('');
   const [allCardsCache, setAllCardsCache] = useState({
     key: null,
     cards: []
   });
+
+  const [sortDraft, setSortDraft] = useState({
+    orderby: '',
+    direction: 'asc'
+  });
+
+  const [sort, setSort] = useState(sortDraft);
 
   const [filtersDraft, setFiltersDraft] = useState({
     color: [],
@@ -50,9 +56,11 @@ export default function CardSearch({
 
   const [filters, setFilters] = useState(filtersDraft);
 
+  const [showSort, setShowSort] = useState(false);
+
   const [term, setTerm] = useState('');
 
-  const buildCacheKey = (term, filters) => {
+  const buildCacheKey = (term, filters, sortoption) => {
     const safeTerm =
       typeof term === 'string'
         ? term.trim()
@@ -73,7 +81,9 @@ export default function CardSearch({
       maxStrength: f.maxStrength,
       minLore: f.minLore,
       maxLore: f.maxLore,
-      classifications: f.classifications
+      classifications: f.classifications,
+      orderby: sortoption.orderby,
+      direction: sortoption.direction
     });
   };
 
@@ -250,15 +260,58 @@ export default function CardSearch({
     }
   };
 
-  const baseCards = filters.bodyText
-    ? allCardsCache.cards
-    : foundCards;
+  //const filteredAllCards = useMemo(() => {
+  //  if (!useClientPaging) return foundCards;
+//
+  //  return applyBodyTextFilter(
+  //    allCardsCache.cards,
+  //    filters.bodyText,
+  //    filters.useRegex
+  //  );
+  //}, [useClientPaging, allCardsCache.cards, filters.bodyText, filters.useRegex, foundCards]);
+//
+  //const activeSource = filteredAllCards;
 
-  const filteredCards = applyBodyTextFilter(
-    baseCards,
+  const source = useMemo(() => {
+    if (useClientPaging) {
+      return applyBodyTextFilter(
+        allCardsCache.cards,
+        filters.bodyText,
+        filters.useRegex
+      );
+    }
+  
+    return foundCards;
+  }, [
+    useClientPaging,
+    allCardsCache.cards,
+    foundCards,
     filters.bodyText,
     filters.useRegex
-  );
+  ]);
+
+  const hasNextPage = useMemo(() => {
+    return page * pageSize < source.length;
+  }, [source, page]);
+
+  const isClientMode =
+    useClientPaging &&
+    allCardsCache.cards?.length > 0;
+
+  const pagedCards = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize;
+
+    return source.slice(start, end);
+  }, [source, page]);
+
+  const goToPage = (next) => {
+    setPage(next);
+
+    if (isClientMode) {
+      loadCardsForSearch(term, filters, next, sortDraft);
+    }
+  };
 
   const buildSearchString = (filters = {}) => {
     const {
@@ -322,17 +375,23 @@ export default function CardSearch({
       .map(s => s.trim())
       .filter(Boolean);
 
-    if (parsedClassifications.length) {
-      parsedClassifications.forEach(c => {
-        clauses.push(`classifications~${c}`);
-      });
+    if (parsedClassifications.length === 1) {
+      clauses.push(`classifications~${parsedClassifications[0]}`);
+    }
+
+    if (parsedClassifications.length > 1) {
+      clauses.push(
+        `(${parsedClassifications
+          .map(c => `classifications~${c}`)
+          .join(';')};)`
+      );
     }
 
     return clauses.join(';');
   };
 
   const searchRef = useRef(
-    _.debounce((term, filters, page = 1) => {
+    _.debounce((term, filters, page = 1, sort) => {
       const search = buildSearchString(filters);
       const finalSearch = [
         term?.trim() ? `name~${term.trim()}` : null,
@@ -345,24 +404,20 @@ export default function CardSearch({
 
       dispatch(fetchCards({
         search: finalSearch || undefined,
-        page
+        page,
+        pageSize: pageSize,
+        orderby: sort.orderby,
+        sortdirection: sort.direction
       }));
     }, 300)
   );
 
-  const runSearch = (nextTerm = term, nextFilters = filters, nextPage = page) => {
+  const runSearch = (nextTerm = term, nextFilters = filters, nextPage = page, nextSort = sort) => {
     setSearchSubmitted(true);
-    searchRef.current(nextTerm, nextFilters, nextPage);
+    searchRef.current(nextTerm, nextFilters, nextPage, nextSort);
   };
 
-  const fetchAllCardsCached = async (filters) => {
-    const key = buildCacheKey(filters);
-    
-    // return cache if valid
-    if (allCardsCacheRef.current && cacheKeyRef.current === key) {
-      return allCardsCacheRef.current;
-    }
-  
+  const fetchAllCardsCached = async (term, filters, sortoptions) => {
     const pageSizeMax = 1000;
     let page = 1;
     let all = [];
@@ -371,7 +426,10 @@ export default function CardSearch({
       const result = await dispatch(fetchCards({
         search: buildSearchString(filters),
         page,
-        pageSize: pageSizeMax
+        pageSize: pageSizeMax,
+        orderby: sortoptions.orderby,
+        sortdirection: sortoptions.direction
+        
       })).unwrap();
     
       if (!result?.length) break;
@@ -383,40 +441,63 @@ export default function CardSearch({
       page++;
     }
   
-    // store cache
-    allCardsCacheRef.current = all;
-    cacheKeyRef.current = key;
-  
     return all;
   };
 
-  const loadCardsForSearch = async (nextTerm = term, nextFilters = filters, nextPage = 1) => {
+  const loadCardsForSearch = async (nextTerm = term, nextFilters = filters, nextPage = 1, nextSort = sort) => {
+    const cacheKey = buildCacheKey(nextTerm, nextFilters, nextSort);
+
     const hasBodyText =
       nextFilters.bodyText && nextFilters.bodyText.trim() !== '';
 
-    const cacheKey = buildCacheKey(term, filtersDraft);
+    const hasOrder =
+      nextSort.orderby && nextSort.orderby.trim() !== '';
+
+    const hasCache =
+      allCardsCache.key === cacheKey && allCardsCache.cards?.length;
+
+    const hasHeavyFilter =
+      hasBodyText ||
+      hasOrder;
 
     if (hasBodyText) {
-      const cards = await fetchAllCardsCached(nextFilters);
-      setAllCardsCache({
-          key: cacheKey,
-          cards
-        });
+      if (allCardsCache.key === cacheKey) {
+        console.log("using cache...");
+      } else {
+        const cards = await fetchAllCardsCached(nextTerm, nextFilters, nextSort);
+        setAllCardsCache({
+            key: cacheKey,
+            cards
+          });
+        }
+        setPage(1);
     } else {
-      searchRef.current(nextTerm, nextFilters, nextPage);
+      searchRef.current(nextTerm, nextFilters, nextPage, nextSort);
     }
+
+    setUseClientPaging(hasHeavyFilter && hasCache);
   };
 
   const handleApply = async () => {
+    const cacheKey = buildCacheKey(term, filtersDraft, sort);
+
     setFilters(filtersDraft);
     setPage(1);
 
     setShowAdvanced(false);
 
     const hasBodyText =
-      filtersDraft.bodyText && filtersDraft.bodyText.trim() !== '';
+      filters.bodyText && filters.bodyText.trim() !== '';
 
-    const cacheKey = buildCacheKey(term, filtersDraft);
+    const hasOrder =
+      sort.orderby && sort.orderby.trim() !== '';
+
+    const hasHeavyFilter =
+      hasBodyText ||
+      hasOrder;
+
+    const hasCache =
+      allCardsCache.key === cacheKey && allCardsCache.cards?.length;
 
     if (hasBodyText) {
       if (allCardsCache.key === cacheKey) {
@@ -424,21 +505,19 @@ export default function CardSearch({
       } else {
         console.log('Fetching full dataset...');
 
-        const cards = await fetchAllCardsCached(
-          dispatch,
-          buildSearchString,
-          filtersDraft,
-          term
-        );
+        const cards = await fetchAllCardsCached(term, filtersDraft, sort);
 
         setAllCardsCache({
           key: cacheKey,
           cards
         });
+        setPage(1); 
       }
     } else {
-      runSearch(term, filtersDraft, 1);
+      runSearch(term, filtersDraft, 1, sort);
     }
+
+    setUseClientPaging(hasHeavyFilter && hasCache);
   };
 
   const handleReset = () => {
@@ -459,8 +538,9 @@ export default function CardSearch({
       classifications: ''
     });
 
-    allCardsCacheRef.current = null;
-    cacheKeyRef.current = '';
+    setAllCardsCache({key: '', cards: []})
+    setPage(1);
+    setUseClientPaging(false);
   };
 
   useEffect(() => {
@@ -468,6 +548,10 @@ export default function CardSearch({
       setFiltersDraft(filters);
     }
   }, [showAdvanced, filters]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [useClientPaging, setPage]);
 
   //useEffect(() => {
   //  loadCardsForSearch(term, filters, page);
@@ -479,13 +563,13 @@ export default function CardSearch({
 
   const renderGrid = () => (
     <div className="card_grid">
-      {filteredCards.map((card, i) => (
+      {pagedCards.map((card, i) => (
         <div
           key={getCardKey(card)}
           className="card_grid_item"
           onClick={() => {
             dispatch(selectCard(card));
-            openViewer(filteredCards, card);
+            openViewer(pagedCards, card);
           }}
         >
           <img src={card.Image} alt={card.Name} />
@@ -511,8 +595,15 @@ export default function CardSearch({
         <h4>Search Cards</h4>
     
         <div className="search_controls">
+          <button
+            className="advanced_btn"
+            onClick={() => setShowSort(true)}
+          >
+            <i className="fa fa-sort" />
+          </button>
     
           {/* advanced filters */}
+          
           <button
             className="advanced_btn"
             onClick={() => setShowAdvanced(true)}
@@ -542,16 +633,16 @@ export default function CardSearch({
           </div>
         ) : (
           <>
-            {filteredCards?.length < 1 && searchSubmitted ? (
+            {pagedCards?.length < 1 && searchSubmitted ? (
               <span className="error">No cards found.</span>
             ) : (
-              filteredCards?.map((card, i) => (
+              pagedCards?.map((card, i) => (
                 <li
                   key={getCardKey(card)}
                   className="deck_row search_row"
                   onClick={() => {
                     dispatch(selectCard(card));
-                    if (openViewer) openViewer(filteredCards, card);
+                    if (openViewer) openViewer(pagedCards, card);
                   }}
                 >
                   <div
@@ -604,18 +695,12 @@ export default function CardSearch({
       </ul>
       )}
 
-      {!loading && filteredCards?.length > 0 && (
+      {!loading && pagedCards?.length > 0 && (
         <div className="pagination_controls">
           <button
             className="pagination_button"
             disabled={page === 1}
-            onClick={() => {
-              setPage(p => {
-                const next = Math.max(1, p - 1);
-                loadCardsForSearch(term, filters, next);
-                return next;
-              });
-            }}
+            onClick={() => goToPage(Math.max(1, page - 1))}
           >
             Prev
           </button>
@@ -625,13 +710,7 @@ export default function CardSearch({
           <button
             className="pagination_button"
             disabled={!hasNextPage}
-            onClick={() => {
-              setPage(p => {
-                const next = p + 1;
-                loadCardsForSearch(term, filters, next);
-                return next;
-              });
-            }}
+            onClick={() => goToPage(page + 1)}
           >
             Next
           </button>
@@ -934,6 +1013,80 @@ export default function CardSearch({
               </button>
                             
               <button onClick={handleApply}>
+                Apply
+              </button>
+            </div>
+            
+          </div>
+        </div>
+      )}
+
+      {showSort && (
+        <div
+          className="advanced_overlay"
+          onClick={() => setShowSort(false)}
+        >
+          <div
+            className="advanced_modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+          
+            <div className="advanced_grid">
+            
+              <div className="filter_row">
+                <div className="filter_field">
+                  <label>Sort By</label>
+                  <select
+                    value={sortDraft.orderby}
+                    onChange={e =>
+                      setSortDraft(s => ({
+                        ...s,
+                        orderby: e.target.value
+                      }))
+                    }
+                  >
+                    <option value="">None</option>
+                    <option value="cost">Cost</option>
+                    <option value="strength">Strength</option>
+                    <option value="lore">Lore</option>
+                    <option value="name">Name</option>
+                    <option value="rarity">Rarity</option>
+                    <option value="color">Color</option>
+                  </select>
+                </div>
+                  
+                <div className="filter_field">
+                  <label>Direction</label>
+                  <select
+                    value={sortDraft.direction}
+                    disabled={!sortDraft.orderby}
+                    onChange={e =>
+                      setSortDraft(s => ({
+                        ...s,
+                        direction: e.target.value
+                      }))
+                    }
+                  >
+                    <option value="asc">Ascending</option>
+                    <option value="desc">Descending</option>
+                  </select>
+                </div>
+              </div>
+                  
+            </div>
+                  
+            <div className="advanced_actions">
+              <button onClick={() => {
+                setSortDraft({ orderby: '', direction: 'asc' });
+              }}>
+                Reset
+              </button>
+            
+              <button onClick={() => {
+                setSort(sortDraft);
+                setShowSort(false);
+                loadCardsForSearch(term, filters, 1, sortDraft);
+              }}>
                 Apply
               </button>
             </div>
