@@ -83,7 +83,7 @@ export default function Deck({ deck }) {
           </div>
         </div>
 
-        {renderDeckBottom()}
+        {/*renderDeckBottom()*/}
 
       </div>
     </AnimateOnChange>

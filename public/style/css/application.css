@@ -1566,27 +1566,26 @@ footer {
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
   font-family: "Roboto", sans-serif;
-  margin-bottom: 30px;
   -webkit-transition: all 200ms ease-in-out;
   transition: all 200ms ease-in-out; }
   .deck_item_head {
-    border-radius: 5px 5px 0 0;
+    border-radius: 5px;
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
     -webkit-box-pack: justify;
         -ms-flex-pack: justify;
             justify-content: space-between;
-    background-color: #e8f9f1;
+    background-color: #F6BE00;
     -webkit-box-sizing: border-box;
             box-sizing: border-box;
-    border-bottom: 2px solid #495867;
+    border: 2px solid #555;
     margin: -10px;
     margin-bottom: 25px;
     padding: 10px;
-    color: #495867; }
+    color: #222; }
   .deck_item h3, .deck_item .deck_output_header strong, .deck_output_header .deck_item strong {
-    color: black;
+    color: #222;
     margin-bottom: 5px;
     font-weight: normal; }
   .deck_item_format {
