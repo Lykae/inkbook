@@ -44,7 +44,8 @@ export default function CardSearch({
     maxLore: '',
     set: [],
     bodyText: '',
-    useRegex: false
+    useRegex: false,
+    classifications: ''
   });
 
   const [filters, setFilters] = useState(filtersDraft);
@@ -71,7 +72,8 @@ export default function CardSearch({
       minStrength: f.minStrength,
       maxStrength: f.maxStrength,
       minLore: f.minLore,
-      maxLore: f.maxLore
+      maxLore: f.maxLore,
+      classifications: f.classifications
     });
   };
 
@@ -270,7 +272,8 @@ export default function CardSearch({
       minStrength,
       maxStrength,
       minLore,
-      maxLore
+      maxLore,
+      classifications = ''
     } = filters;
 
     const clauses = [];
@@ -312,6 +315,17 @@ export default function CardSearch({
       } else {
         clauses.push(`(${set.map(s => `set_name~${s}`).join(';|')};)`);
       }
+    }
+
+    const parsedClassifications = classifications
+      .split(',')
+      .map(s => s.trim())
+      .filter(Boolean);
+
+    if (parsedClassifications.length) {
+      parsedClassifications.forEach(c => {
+        clauses.push(`classifications~${c}`);
+      });
     }
 
     return clauses.join(';');
@@ -441,7 +455,8 @@ export default function CardSearch({
       maxLore: '',
       set: [],
       bodyText: '',
-      useRegex: false
+      useRegex: false,
+      classifications: ''
     });
 
     allCardsCacheRef.current = null;
@@ -853,6 +868,20 @@ export default function CardSearch({
                 </div>
                     
                 <div className="range_group">
+                  <div className="filter_field">
+                    <label>Classifications</label>
+                    <input
+                      type="text"
+                      placeholder="Storyborn, Hero"
+                      value={filtersDraft.classifications || ''}
+                      onChange={e =>
+                        setFiltersDraft(f => ({
+                          ...f,
+                          classifications: e.target.value
+                        }))
+                      }
+                    />
+                  </div>
                 </div>
                     
               </div>
