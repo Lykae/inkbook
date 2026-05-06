@@ -112,6 +112,34 @@ export default function DeckDetail() {
     setCurrentIndex(0);
   };
 
+  const handleExport = () => {
+    if (!cardList.length) return;
+
+    // group cards
+    const counts = {};
+
+    cardList.forEach(card => {
+      const key = getCardKey(card);
+
+      if (!counts[key]) {
+        counts[key] = { name: card.name, count: 0 };
+      }
+
+      counts[key].count++;
+    });
+
+    // build export string
+    const exportText = Object.values(counts)
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map(({ name, count }) => `${count} ${name}`)
+      .join('\n');
+
+    // copy to clipboard
+    navigator.clipboard.writeText(exportText);
+
+    alert('Deck copied to clipboard!');
+  };
+
   const renderMobileGrid = () => {
     const grouped = getGroupedCards();
 
@@ -257,6 +285,13 @@ export default function DeckDetail() {
           <Link to={`/proxy/${id}`} className="proxy-button">
             Print proxies
           </Link>
+
+          <button
+            onClick={handleExport}
+            className="proxy-button"
+          >
+            Export deck
+          </button>
 
           <SampleHand deck={deck} />
         </div>

@@ -1747,7 +1747,8 @@ footer {
   padding: 10px 10px 0 10px;
   text-decoration: none;
   margin-bottom: 20px;
-  font-family: "Oswald", sans-serif; }
+  font-family: "Oswald", sans-serif;
+  width: 100% }
   .proxy-button:hover, .proxy-button:active, .proxy-button:focus {
     background-color: #555;
     outline: 0;
