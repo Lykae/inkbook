@@ -13,7 +13,8 @@ export default function CardSearch({
   onIncrease,
   onDecrease,
   page,
-  setPage
+  setPage,
+  setImportOpen
 }) {
   const dispatch = useDispatch();
   const foundCards = useSelector(state => state.cards.foundCards);
@@ -595,6 +596,13 @@ export default function CardSearch({
         <h4>Search Cards</h4>
     
         <div className="search_controls">
+          <button
+            className="advanced_btn"
+            onClick={() => setImportOpen(true)}
+          >
+            <i className="fa fa-upload" />
+          </button>
+
           <button
             className="advanced_btn"
             onClick={() => setShowSort(true)}

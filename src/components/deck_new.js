@@ -5,7 +5,6 @@ import { useOutletContext, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from "framer-motion";
 
 import { createDeck, updateDeck, fetchDeck } from '../features/decks/decksSlice';
-//import { selectCard } from '../features/cards/cardsSlice';
 
 import { useSearchParams } from 'react-router-dom';
 
@@ -13,8 +12,9 @@ import CardSearch from './card_search';
 import CardViewer from './card_view';
 
 import { getFormats } from '../constants/formats';
-
 import { getCardKey } from '../helpers/getCardKey';
+
+import axios from 'axios';
 
 export default function NewDeck() {
   const dispatch = useDispatch();
@@ -51,6 +51,9 @@ export default function NewDeck() {
 
   const [page, setPage] = useState(1);
   
+  const [importOpen, setImportOpen] = useState(false);
+  const [importText, setImportText] = useState('');
+
   useEffect(() => {
     if (editId) {
       dispatch(fetchDeck(editId));
@@ -202,7 +205,85 @@ export default function NewDeck() {
 
   }, [deckName, deckCreator, deckFormat, deckDescription, mainDeckArray, maybeboardArray, editId, dispatch, navigate]);
 
-  
+  const handleImport = async () => {
+    if (!importText.trim()) return;
+
+    const lines = importText.split('\n');
+
+    const nameCounts = new Map();
+
+    // Parse input
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed) continue;
+
+      const match = trimmed.match(/^(\d+)\s+(.+)$/);
+      if (!match) continue;
+
+      const amount = parseInt(match[1], 10);
+      const name = match[2].trim();
+
+      nameCounts.set(name, (nameCounts.get(name) || 0) + amount);
+    }
+
+    if (nameCounts.size === 0) return;
+
+    // Build strict query
+    const names = Array.from(nameCounts.keys());
+    const strictParam = names.join(';');
+
+    try {
+      const res = await axios.get(
+        `https://api.lorcana-api.com/cards/fetch?strict=${encodeURIComponent(strictParam)}`
+      );
+
+      const cards = Array.isArray(res.data)
+        ? res.data
+        : res.data?.data || [];
+
+      // Index results
+      const cardMap = new Map();
+
+      cards.forEach(card => {
+        cardMap.set(card.Name.toLowerCase(), card);
+      });
+
+      const newCards = [];
+      const notFound = [];
+
+      // Build deck
+      for (const [name, count] of nameCounts.entries()) {
+        const found = cardMap.get(name.toLowerCase());
+
+        if (!found) {
+          notFound.push(name);
+          continue;
+        }
+
+        for (let i = 0; i < count; i++) {
+          newCards.push(found);
+        }
+      }
+
+      // Apply
+      if (newCards.length > 0) {
+        setMainDeckArray(prev => [...prev, ...newCards]);
+        setIsDirty(true);
+      }
+
+      if (notFound.length > 0) {
+        alert(`These cards were not found:\n${notFound.join('\n')}`);
+      }
+
+    } catch (err) {
+      console.error('Import failed:', err);
+      alert('Import failed. Please try again.');
+    }
+
+    setImportOpen(false);
+    setImportText('');
+    changeView('main');
+  };
 
   const { setCanSave, setOnSave } = useOutletContext();
   useEffect(() => {
@@ -445,6 +526,7 @@ export default function NewDeck() {
             onDecrease={decreaseCard}
             page={page}
             setPage={setPage}
+            setImportOpen={setImportOpen}
           />
 
           <div className="col-sm-4 selected_card">
@@ -556,6 +638,7 @@ export default function NewDeck() {
                 onDecrease={decreaseCard}
                 page={page}
                 setPage={setPage}
+                setImportOpen={setImportOpen}
               />
             </div>
           )}
@@ -674,6 +757,35 @@ export default function NewDeck() {
             <i className="fa fa-star-o" />
           </button>
 
+        </div>
+      )}
+
+      {importOpen && (
+        <div className="importmodal_overlay" onClick={() => setImportOpen(false)}>
+          <div className="importmodal_content" onClick={(e) => e.stopPropagation()}>
+
+            <h3>Import Deck</h3>
+
+            <textarea
+              value={importText}
+              onChange={(e) => setImportText(e.target.value)}
+              placeholder={`4 Mother Gothel - Selfish Manipulator
+4 Do It Again!
+4 Alice - Growing Girl`}
+              rows={10}
+            />
+
+            <div className="importmodal_actions">
+              <button onClick={handleImport}>
+                Import
+              </button>
+              
+              <button onClick={() => setImportOpen(false)}>
+                Cancel
+              </button>
+            </div>
+              
+          </div>
         </div>
       )}
 
