@@ -92,11 +92,11 @@ export default function CardSearch({
   ];
 
   const TYPE_OPTIONS = [
-    'Characters',
-    'Actions',
-    'Songs',
-    'Items',
-    'Locations'
+    'Character',
+    'Action',
+    'Song',
+    'Item',
+    'Location'
   ];
   
   const COLOR_OPTIONS = [
