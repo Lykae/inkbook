@@ -14,7 +14,7 @@ export default function CardViewer({
 }) {
     const [offset, setOffset] = useState({ x: 0, y: 0 });
     const [animating, setAnimating] = useState(false);
-    const [imageLoaded, setImageLoaded] = useState(false);
+    //const [imageLoaded, setImageLoaded] = useState(false);
     const [pressed, setPressed] = useState(null);
     
     const startX = useRef(0);

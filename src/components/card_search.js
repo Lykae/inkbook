@@ -379,8 +379,14 @@ export default function CardSearch({
     const hasBodyText =
       nextFilters.bodyText && nextFilters.bodyText.trim() !== '';
 
+    const cacheKey = buildCacheKey(term, filtersDraft);
+
     if (hasBodyText) {
       const cards = await fetchAllCardsCached(nextFilters);
+      setAllCardsCache({
+          key: cacheKey,
+          cards
+        });
     } else {
       searchRef.current(nextTerm, nextFilters, nextPage);
     }
