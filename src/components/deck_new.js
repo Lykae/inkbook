@@ -527,6 +527,7 @@ export default function NewDeck() {
             page={page}
             setPage={setPage}
             setImportOpen={setImportOpen}
+            deckFormat={deckFormat}
           />
 
           <div className="col-sm-4 selected_card">
@@ -639,6 +640,7 @@ export default function NewDeck() {
                 page={page}
                 setPage={setPage}
                 setImportOpen={setImportOpen}
+                deckFormat={deckFormat}
               />
             </div>
           )}

@@ -1,9 +1,7 @@
 export const FORMATS = [
   'Core',
   'Infinity',
-  'Heroic',
-  'Hydra',
-  'Poorcana'
+  'No Limit',
 ];
 
 export const getFormats = () => FORMATS;

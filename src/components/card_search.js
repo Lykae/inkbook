@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import _ from 'lodash';
 
@@ -14,7 +14,8 @@ export default function CardSearch({
   onDecrease,
   page,
   setPage,
-  setImportOpen
+  setImportOpen,
+  deckFormat
 }) {
   const dispatch = useDispatch();
   const foundCards = useSelector(state => state.cards.foundCards);
@@ -224,6 +225,44 @@ export default function CardSearch({
     }
   };
 
+  const isCardLegalForFormat = useCallback((card, format) => {
+
+    const CORE_LEGAL_SETS = [
+      'Shimmering Skies',
+      'Azurite Sea',
+      "Archazia's Island",
+      'Reign of Jafar',
+      'Fabled',
+      'Whispers in the Well',
+      'Winterspell',
+      'Wilds Unknown',
+      'Lorcana Promos'
+    ];
+  
+    const BANNED_CARDS = [
+      'Hiram Flaversham - Toymaker',
+      'Fortisphere'
+    ];
+
+    // banned in every format
+    if (BANNED_CARDS.includes(card.Name)) {
+      return false;
+    }
+  
+    // infinity = everything else legal
+    if (format === 'Infinity') {
+      return true;
+    }
+  
+    // core = set 5+
+    if (format === 'Core') {
+      return CORE_LEGAL_SETS.includes(card.Set_Name);
+    }
+  
+    // default/no limit
+    return true;
+  }, []);
+
   //const search = useCallback(
   //  _.debounce((term) => {
   //    if (term && term.trim() !== '') {
@@ -274,23 +313,26 @@ export default function CardSearch({
   //const activeSource = filteredAllCards;
 
   const source = useMemo(() => {
-    if (useClientPaging) {
-      return applyBodyTextFilter(
-        allCardsCache.cards,
-        filters.bodyText,
-        filters.useRegex
-      );
-    }
-  
-    return foundCards;
+    const cards = useClientPaging
+      ? applyBodyTextFilter(
+          allCardsCache.cards,
+          filters.bodyText,
+          filters.useRegex
+        )
+      : foundCards;
+
+    return cards.filter(card =>
+      isCardLegalForFormat(card, deckFormat)
+    );
   }, [
     useClientPaging,
     allCardsCache.cards,
     foundCards,
     filters.bodyText,
-    filters.useRegex
+    filters.useRegex,
+    deckFormat,
+    isCardLegalForFormat
   ]);
-
   const hasNextPage = useMemo(() => {
     return page * pageSize < source.length;
   }, [source, page]);
