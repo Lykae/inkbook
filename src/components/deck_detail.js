@@ -204,7 +204,7 @@ export default function DeckDetail() {
               <span
                 className={`card_count ${card.Inkable ? 'inkable' : 'not_inkable'}`}
               >
-                {count}
+                {card.cost}
               </span>
 
               {card.name}

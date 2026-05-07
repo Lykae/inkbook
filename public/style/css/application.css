@@ -1561,8 +1561,6 @@ footer {
   color: red; }
 
 .deck_item {
-  padding: 10px;;
-  overflow: hidden;
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
   font-family: "Roboto", sans-serif;
@@ -1576,16 +1574,15 @@ footer {
     -webkit-box-pack: justify;
         -ms-flex-pack: justify;
             justify-content: space-between;
-    background-color: #F6BE00;
+    background-color: #222;
     -webkit-box-sizing: border-box;
             box-sizing: border-box;
-    border: 2px solid #555;
-    margin: -10px;
+    border: 2px solid #F6BE00;
     margin-bottom: 25px;
     padding: 10px;
-    color: #222; }
+    color: #F6BE00; }
   .deck_item h3, .deck_item .deck_output_header strong, .deck_output_header .deck_item strong {
-    color: #222;
+    color: #F6BE00;
     margin-bottom: 5px;
     font-weight: normal; }
   .deck_item_format {
