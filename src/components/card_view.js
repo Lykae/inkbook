@@ -52,22 +52,26 @@ export default function CardViewer({
     };
   
     const goNext = () => {
+      const next = (currentIndex + 1) % cards.length;
+
       setAnimating(true);
       setOffset({ x: -400, y: 0 });
-    
+
       setTimeout(() => {
-        setCurrentIndex((i) => (i + 1) % cards.length);
+        setCurrentIndex(next);
         setOffset({ x: 0, y: 0 });
         setAnimating(false);
       }, 200);
     };
   
     const goPrev = () => {
+      const prev = (currentIndex - 1 + cards.length) % cards.length;
+
       setAnimating(true);
       setOffset({ x: 400, y: 0 });
-    
+
       setTimeout(() => {
-        setCurrentIndex((i) => (i - 1 + cards.length) % cards.length);
+        setCurrentIndex(prev);
         setOffset({ x: 0, y: 0 });
         setAnimating(false);
       }, 200);
@@ -123,7 +127,6 @@ export default function CardViewer({
     
           <div
             className="card-swipe-area"
-            key={currentIndex}
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}

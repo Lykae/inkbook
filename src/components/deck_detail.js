@@ -19,10 +19,15 @@ export default function DeckDetail() {
 
   const deck = useSelector(state => state.decks.selectedDeck);
 
-  const [activeCard, setActiveCard] = useState({
-    image: './../../img/mtg-back.jpg',
-    name: 'Select a card'
+  const [viewerState, setViewerState] = useState({
+    cards: [],
+    index: 0
   });
+
+  //const [activeCard, setActiveCard] = useState({
+  //  image: './../../img/mtg-back.jpg',
+  //  name: 'Select a card'
+  //});
 
   useEffect(() => {
     dispatch(fetchDeck(id));
@@ -38,7 +43,6 @@ export default function DeckDetail() {
   }, []);
 
   const [viewerOpen, setViewerOpen] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
 
   const cardList = useMemo(() => {
     return (deck?.cards || []).map((c) => ({
@@ -54,42 +58,52 @@ export default function DeckDetail() {
     return (deck?.maybeboard || []).map((c) => ({
       ...c,
       name: c.name || c.Name,
+      cost: c.cost ?? c.Cost,
       set_name: c.set_name || c.Set_Name,
       image: c.image || c.Image
     }));
   }, [deck?.maybeboard]);
 
-  //const handleCardClick = (card) => {
-  //  setActiveCard(card);
-  //};
-
   const viewerCards = useMemo(() => {
-    const seen = new Set();
+    const map = new Map();
 
-    return cardList.filter((card) => {
+    for (const card of cardList) {
       const key = getCardKey(card);
 
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
+      if (!map.has(key)) {
+        map.set(key, { ...card, _key: key });
+      }
+    }
+
+    return Array.from(map.values());
   }, [cardList]);
 
-  const handleCardClick = (card) => {
-    const index = viewerCards.findIndex(
-      c =>
-        c.name === card.name &&
-        c.cost === card.cost &&
-        c.set_name === card.set_name
-    );
+  const maybeViewerCards = useMemo(() => {
+    const map = new Map();
 
-    setCurrentIndex(index >= 0 ? index : 0);
+    for (const card of maybeList) {
+      const key = getCardKey(card);
 
-    if (window.innerWidth < 768) {
-      setViewerOpen(true);
-    } else {
-      setActiveCard(card);
+      if (!map.has(key)) {
+        map.set(key, { ...card, _key: key });
+      }
     }
+
+    return Array.from(map.values());
+  }, [maybeList]);
+
+  const handleCardClick = (card, source = viewerCards) => {
+    const cardsSnapshot = [...source];
+    const key = getCardKey(card);
+    
+    const index = cardsSnapshot.findIndex(c => getCardKey(c) === key);
+    
+    setViewerState({
+      cards: cardsSnapshot,
+      index: index >= 0 ? index : 0
+    });
+  
+    setViewerOpen(true);
   };
 
   const handleDeleteDeck = async () => {
@@ -127,7 +141,10 @@ export default function DeckDetail() {
 
   const handleCloseViewer = () => {
     setViewerOpen(false);
-    setCurrentIndex(0);
+    setViewerState({
+      cards: [],
+      index: 0
+    });
   };
 
   const handleExport = () => {
@@ -167,7 +184,7 @@ export default function DeckDetail() {
           <div
             key={getCardKey(card)}
             className="mobile_card_item"
-            onClick={() => handleCardClick(card)}
+            onClick={() => handleCardClick(card, viewerCards)}
           >
             <img src={card.image} alt={card.name} />
 
@@ -180,23 +197,39 @@ export default function DeckDetail() {
     );
   };
 
+  const getViewerSource = (type) => {
+    switch (type) {
+      case 'maybe':
+        return maybeViewerCards;
+      case 'main':
+      default:
+        return viewerCards;
+    }
+  };
+
   const renderList = (list, isMaybe = false) => {
-    const grouped = list.reduce((acc, card) => {
-      const key = getCardKey(card);
-
-      if (!acc[key]) {
-        acc[key] = { card, count: 0 };
-      }
-
-      acc[key].count += 1;
-      return acc;
-    }, {});
+    const grouped = Object.values(
+      list.reduce((acc, card) => {
+        const key = getCardKey(card);
+      
+        if (!acc[key]) {
+          acc[key] = {
+            card,
+            count: 0,
+            key
+          };
+        }
+      
+        acc[key].count++;
+        return acc;
+      }, {})
+    );
 
     return Object.values(grouped)
-      .sort((a, b) => a.card.name.localeCompare(b.card.name))
+      //.sort((a, b) => a.card.name.localeCompare(b.card.name))
       .map(({ card, count }) => (
         <div key={getCardKey(card)} className="deck_row" 
-            onClick={() => handleCardClick(card)}>
+            onClick={() => handleCardClick(card, isMaybe === true ? maybeViewerCards : viewerCards)}>
         
           <div className="card_name">
             <strong className="card_title">
@@ -220,30 +253,30 @@ export default function DeckDetail() {
       ));
   };
 
-  const renderCardsColumn = () => (
-    <div className="deck_output">
-      <div className="deck_output_header">
-        <h5>Main Deck</h5>
-        <label>{cardList.length} cards</label>
-      </div>
-
-      <div className="deck_output_cards">
-        {renderList(cardList)}
-      </div>
-    </div>
-  );
-
-  const renderViewerColumn = () => (
-    <div className="deck_detail_active_card">
-      <AnimateOnChange
-        baseClassName="active-card"
-        animationClassName="active-card-animate"
-        animate={true}
-      >
-        <img src={activeCard.image} alt={activeCard.name} />
-      </AnimateOnChange>
-    </div>
-  );
+  //const renderCardsColumn = () => (
+  //  <div className="deck_output">
+  //    <div className="deck_output_header">
+  //      <h5>Main Deck</h5>
+  //      <label>{cardList.length} cards</label>
+  //    </div>
+//
+  //    <div className="deck_output_cards">
+  //      {renderList(cardList)}
+  //    </div>
+  //  </div>
+  //);
+//
+  //const renderViewerColumn = () => (
+  //  <div className="deck_detail_active_card">
+  //    <AnimateOnChange
+  //      baseClassName="active-card"
+  //      animationClassName="active-card-animate"
+  //      animate={true}
+  //    >
+  //      <img src={activeCard.image} alt={activeCard.name} />
+  //    </AnimateOnChange>
+  //  </div>
+  //);
 
   const renderStatsColumn = () => (
     <>
@@ -266,11 +299,11 @@ export default function DeckDetail() {
         {/* CONTENT GRID */}
         <div className="stats_grid">
         
-          <div>
+          <div className="piechart_container">
             <div className="stats_header">
               Colors
             </div>
-            <div>
+            <div className="piechart">
               <ColorChart deck={deck} />
             </div>
           </div>
@@ -318,7 +351,7 @@ export default function DeckDetail() {
             Delete deck
           </button>
 
-          <SampleHand deck={deck} />
+          <SampleHand deck={deck} handleCardClick={handleCardClick} />
         </div>
       </div>
     </>
@@ -343,23 +376,6 @@ export default function DeckDetail() {
 
   return (
     <div className="container deck_detail">
-    {!isMobile && (
-      <div className="row">
-        <div className="col-sm-4">{renderCardsColumn()}</div>
-        <div className="col-sm-5">{renderViewerColumn()}</div>
-        <div className="col-sm-3">
-          {renderStatsColumn()}
-          <div className="deck_detail_well">
-            <div className="deck_detail_well_header">Maybe</div>
-            <div className="deck_detail_well_body">
-              <span>Not implemented yet</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    )}
-
-    {isMobile && (
       <div className="mobile_view_container">
       
         {view === 'cards' && (
@@ -387,7 +403,7 @@ export default function DeckDetail() {
             </div>
                   
             <div className="deck_output_cards">
-              {renderList(maybeList)}
+              {renderList(maybeList, true)}
             </div>
           </div>
         )}
@@ -395,9 +411,7 @@ export default function DeckDetail() {
         {view === 'tools' && renderTools()}
 
       </div>
-    )}
 
-    {isMobile && (
       <div className="mobile_bottombar">
         
         <button onClick={() => setView('stats')} className="nav_btn">
@@ -421,13 +435,14 @@ export default function DeckDetail() {
         </button>
         
       </div>
-    )}
 
       <CardViewer
         open={viewerOpen}
-        cards={viewerCards}
-        currentIndex={currentIndex}
-        setCurrentIndex={setCurrentIndex}
+        cards={viewerState.cards}
+        currentIndex={viewerState.index}
+        setCurrentIndex={(i) =>
+          setViewerState(s => ({ ...s, index: i }))
+        }
         onClose={handleCloseViewer}
         showEditControls={false}
         getCount={getCount}

@@ -316,9 +316,10 @@ export default function NewDeck() {
     setViewerCards(uniqueCards);
     setCurrentIndex(index >= 0 ? index : 0);
 
-    if (window.innerWidth < 768) {
-      setViewerOpen(true);
-    }
+    //if (window.innerWidth < 768) {
+    //  setViewerOpen(true);
+    //}
+    setViewerOpen(true);
   };
 
   const handleCloseViewer = () => {
@@ -472,140 +473,6 @@ export default function NewDeck() {
   return (
     <div className="container deck">
       {renderError()}
-
-      <div className="desktop_layout">
-
-        <div className="deck_inputs row">
-          <div className="deck_inputs_group">
-            <label>Deck Name</label>
-            <input
-              value={deckName}
-              onChange={(e) => markDirty(setDeckName)(e.target.value)}
-            />
-          </div>
-
-          <div className="deck_inputs_group">
-            <label>Created by</label>
-            <input
-              value={deckCreator}
-              onChange={(e) => markDirty(setDeckCreator)(e.target.value)}
-            />
-          </div>
-
-          <div className="deck_inputs_group">
-            <label>Deck Format</label>
-            <select
-              value={deckFormat}
-              onChange={(e) => markDirty(setDeckFormat)(e.target.value)}
-            >
-              <option value="">Select Format</option>
-              {getFormats().map(format => (
-                <option key={format} value={format}>
-                  {format}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div className="deck_bottom">
-          <label>Description</label>
-          <textarea
-            value={deckDescription}
-            onChange={(e) => markDirty(setDeckDescription)(e.target.value)}
-          />
-        </div>
-
-        <div className="row">
-          <CardSearch
-            layout={layout}
-            setLayout={setLayout}
-            openViewer={openViewer}
-            getCount={getCount}
-            onIncrease={increaseCard}
-            onDecrease={decreaseCard}
-            page={page}
-            setPage={setPage}
-            setImportOpen={setImportOpen}
-            deckFormat={deckFormat}
-          />
-
-          <div className="col-sm-4 selected_card">
-
-            {!selectedCard && (
-              <h5>To begin, please search for a card.</h5>
-            )}
-
-            {selectedCard && (
-              <div>
-              
-                <div className="selected_card_image">
-                  <img
-                    src={selectedCard.Image}
-                    alt={selectedCard.Name}
-                    onClick={() => openViewer([selectedCard], selectedCard)}
-                  />
-                </div>
-            
-                <div className="selected_card_details">
-            
-                  <div className="selected_card_details_head">
-                    <strong>{selectedCard.Name}</strong>
-                  </div>
-            
-                  <div className="selected_card_buttons">
-            
-                    <button onClick={() => decreaseCard(selectedCard)}>
-                      −
-                    </button>
-            
-                    <span className="card-count">
-                      {getCount(selectedCard)}
-                    </span>
-            
-                    <button onClick={() => increaseCard(selectedCard)}>
-                      +
-                    </button>
-            
-                    <button onClick={() => addMaybeboard(selectedCard)}>
-                      +?
-                    </button>
-            
-                  </div>
-            
-                </div>
-              </div>
-            )}
-
-          </div>
-
-          <div className="col-sm-4 deck_output">
-            <div className="deck_output_header">
-              <h5>Main Deck</h5>
-              <label>{mainDeckArray.length} cards</label>
-            </div>
-
-            <div className="deck_output_cards">
-              {renderList(mainDeckArray, removeCard)}
-            </div>
-          </div>
-
-          <div className="col-sm-4 deck_output">
-            <div className="deck_output_header">
-              <h5>Maybe</h5>
-              <label>{maybeboardArray.length} cards</label>
-            </div>
-
-            <div className="deck_output_cards">
-              {renderList(maybeboardArray, removeMaybeboard)}
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-
-      {isMobile && (
         <div className={`mobile_view_container ${animDir}`}>
 
           <AnimatePresence mode="wait">
@@ -735,32 +602,27 @@ export default function NewDeck() {
           </motion.div>
         </AnimatePresence>
         </div>
-      )}
 
       {/* ========================= */}
       {/* MOBILE BOTTOM NAV */}
       {/* ========================= */}
-      {isMobile && (
-        <div className="mobile_bottombar">
-        
-          <button onClick={() => changeView('props')} className="nav_btn">
-            <i className="fa fa-cog" />
-          </button>
+      <div className="mobile_bottombar">
+        <button onClick={() => changeView('props')} className="nav_btn">
+          <i className="fa fa-cog" />
+        </button>
 
-          <button onClick={() => changeView('search')} className="nav_btn">
-            <i className="fa fa-search" />
-          </button>
+        <button onClick={() => changeView('search')} className="nav_btn">
+          <i className="fa fa-search" />
+        </button>
 
-          <button onClick={() => changeView('main')} className="nav_btn">
-            <i className="fa fa-list" />
-          </button>
+        <button onClick={() => changeView('main')} className="nav_btn">
+          <i className="fa fa-list" />
+        </button>
 
-          <button onClick={() => changeView('maybe')} className="nav_btn">
-            <i className="fa fa-star-o" />
-          </button>
-
-        </div>
-      )}
+        <button onClick={() => changeView('maybe')} className="nav_btn">
+          <i className="fa fa-star-o" />
+        </button>
+      </div>
 
       {importOpen && (
         <div className="importmodal_overlay" onClick={() => setImportOpen(false)}>

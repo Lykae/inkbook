@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import AnimateOnChange from 'react-animate-on-change';
 
-export default function SampleHand({ deck }) {
+export default function SampleHand({ deck, handleCardClick }) {
 
   const [hand, setHand] = useState([]);
 
@@ -20,7 +20,13 @@ export default function SampleHand({ deck }) {
     const cards = deck?.cards || [];
 
     const shuffled = shuffle(cards);
-    const newHand = shuffled.slice(0, 7);
+    const newHand = shuffled.slice(0, 7).map(card => ({
+      ...card,
+      name: card.name || card.Name,
+      image: card.image || card.Image,
+      set_name: card.set_name || card.Set_Name,
+      cost: card.cost ?? card.Cost
+    }));
 
     setHand(newHand);
   };
@@ -38,14 +44,15 @@ export default function SampleHand({ deck }) {
       <div className="sample_hand">
         {hand.map((card, idx) => (
           <AnimateOnChange
-            key={`${card.Name}-${idx}`}
+            key={`${card.name}-${idx}`}
             baseClassName="hand-card"
             animationClassName="hand-card-animate"
             animate={true}
           >
             <img
-              alt={card.Name}
-              src={card.Image}
+              onClick={() => handleCardClick(card, hand)}
+              alt={card.name}
+              src={card.image}
             />
           </AnimateOnChange>
         ))}

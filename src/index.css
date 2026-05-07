@@ -211,12 +211,14 @@ code {
   padding: 10px;
 }
 
+/*
 @media (min-width: 768px) {
   .mobile_topbar,
   .mobile_bottombar {
     display: none;
   }
 }
+  */
 
 @media (max-width: 768px) {
   .deck h2 {
@@ -475,6 +477,12 @@ code {
   padding: 8px;
 }
 
+@media (min-width: 1024px) {
+  .mobile_card_grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
 .mobile_card_item {
   position: relative;
   cursor: pointer;
@@ -608,7 +616,8 @@ code {
   align-items: center;
 
   width: 100%;
-  height: 30vh;
+  /*height: 30vh;*/
+  margin: 1em 0em 1em 0em;
 
   gap: 0;
   padding: 0 10px;
@@ -648,9 +657,9 @@ code {
 */
 
 .hand-card img {
-  width: 100%;
+  width: auto;
   height: auto;
-  max-height: 65vh;
+  max-height: 30vh;
 
   object-fit: contain;
   border-radius: 8px;
@@ -1209,4 +1218,61 @@ button {
   display: flex;
   gap: 10px;
   justify-content: flex-end;
+}
+
+/* deck list filter */
+.filter {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter label {
+    font-weight: 600;
+}
+
+.filter input,
+.filter select {
+    width: 100%;
+}
+
+/* deck new props */
+.deck_inputs_group,
+.deck_bottom {
+    display: flex;
+    flex-direction: column;
+}
+
+.deck_inputs_group label,
+.deck_bottom label {
+    font-weight: 600;
+}
+
+
+.deck_bottom textarea {
+    width: 70vw;
+    margin: 10px;
+}
+
+/* deck list label */
+h2 {
+  margin: 0.5em;
+}
+
+/* sample hand */
+.hand_container h2 {
+  margin: 0;
+}
+
+/* pie chart */
+
+@media (min-width: 1024px) {
+  .piechart {
+    max-width: 40vh;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .piechart_container {
+    justify-content: center;
+  }
 }
