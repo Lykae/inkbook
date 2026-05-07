@@ -120,6 +120,22 @@ export const fetchDeck = createAsyncThunk(
   }
 );
 
+export const deleteDeck = createAsyncThunk(
+  'decks/deleteDeck',
+  async (id) => {
+    const db = await initDB();
+
+    await db.run(
+      'DELETE FROM decks WHERE id = ?',
+      [id]
+    );
+
+    await saveDB(db);
+
+    return id;
+  }
+);
+
 const decksSlice = createSlice({
   name: 'decks',
   initialState: {
@@ -155,6 +171,17 @@ const decksSlice = createSlice({
         // optional but good:
         if (state.selectedDeck?.id === action.payload.id) {
           state.selectedDeck = action.payload;
+        }
+      })
+
+      // DELETE
+      .addCase(deleteDeck.fulfilled, (state, action) => {
+        state.list = state.list.filter(
+          deck => deck.id !== action.payload
+        );
+
+        if (state.selectedDeck?.id === action.payload) {
+          state.selectedDeck = null;
         }
       });
   }

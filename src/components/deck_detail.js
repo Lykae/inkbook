@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import CardViewer from './card_view';
 
-import { fetchDeck } from '../features/decks/decksSlice';
+import { fetchDeck, deleteDeck } from '../features/decks/decksSlice';
 
 import SampleHand from './sample_hand';
 import ColorChart from './color_chart';
@@ -15,6 +15,7 @@ import { getCardKey } from '../helpers/getCardKey';
 export default function DeckDetail() {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const deck = useSelector(state => state.decks.selectedDeck);
 
@@ -88,6 +89,23 @@ export default function DeckDetail() {
       setViewerOpen(true);
     } else {
       setActiveCard(card);
+    }
+  };
+
+  const handleDeleteDeck = async () => {
+    const confirmed = window.confirm(
+      `Delete "${deck.name}"?`
+    );
+  
+    if (!confirmed) return;
+  
+    try {
+      await dispatch(deleteDeck(deck.id)).unwrap();
+    
+      navigate('/decks');
+    } catch (err) {
+      console.error(err);
+      alert('Failed to delete deck.');
     }
   };
 
@@ -291,6 +309,13 @@ export default function DeckDetail() {
             className="proxy-button"
           >
             Export deck
+          </button>
+
+          <button
+            onClick={handleDeleteDeck}
+            className="proxy-button delete_button"
+          >
+            Delete deck
           </button>
 
           <SampleHand deck={deck} />
