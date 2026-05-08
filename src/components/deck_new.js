@@ -23,8 +23,6 @@ export default function NewDeck() {
   const [searchParams] = useSearchParams();
   const editId = searchParams.get('edit');
 
-  const selectedCard = useSelector(state => state.cards.selectedCard);
-
   const [showSort, setShowSort] = useState(false);
 
   const [sortDraft, setSortDraft] = useState({
@@ -51,7 +49,7 @@ export default function NewDeck() {
   // 'search' | 'main' | 'maybe' | 'props'
   const [isDirty, setIsDirty] = useState(false);
 
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  //const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   const [animDir, setAnimDir] = useState('right');
   const prevView = React.useRef(view);
@@ -71,11 +69,11 @@ export default function NewDeck() {
     }
   }, [editId, dispatch]);
 
-  useEffect(() => {
-    const handler = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener('resize', handler);
-    return () => window.removeEventListener('resize', handler);
-  }, []);
+  //useEffect(() => {
+  //  const handler = () => setIsMobile(window.innerWidth < 768);
+  //  window.addEventListener('resize', handler);
+  //  return () => window.removeEventListener('resize', handler);
+  //}, []);
 
   useEffect(() => {
     if (!selectedDeck || !editId) return;
@@ -117,64 +115,66 @@ export default function NewDeck() {
   //  setSideboardArray(prev => [...prev, card]);
   //};
 
-  const sortCards = (cards) => {
+  const sortCards = useCallback((cards) => {
     if (!sort.orderby) return cards;
-
+    
     const sorted = [...cards];
-    console.log("SORTED", sorted);
-
+    
     sorted.sort((a, b) => {
       let aVal;
       let bVal;
-
+    
       switch (sort.orderby) {
         case 'cost':
-          aVal = a.Cost || 0;
-          bVal = b.Cost || 0;
+          aVal = a.cost ?? a.Cost ?? 0;
+          bVal = b.cost ?? b.Cost ?? 0;
           break;
-
+      
         case 'strength':
           aVal = a.Strength || 0;
           bVal = b.Strength || 0;
           break;
-
+      
         case 'lore':
           aVal = a.Lore || 0;
           bVal = b.Lore || 0;
           break;
-
+      
         case 'name':
-          aVal = a.Name || '';
-          bVal = b.Name || '';
+          aVal = a.name || a.Name || '';
+          bVal = b.name || b.Name || '';
+      
           return sort.direction === 'asc'
             ? aVal.localeCompare(bVal)
             : bVal.localeCompare(aVal);
-
+      
         case 'color':
           aVal = a.Color || '';
           bVal = b.Color || '';
+      
           return sort.direction === 'asc'
             ? aVal.localeCompare(bVal)
             : bVal.localeCompare(aVal);
-
+      
         case 'rarity':
           aVal = a.Rarity || '';
           bVal = b.Rarity || '';
+      
           return sort.direction === 'asc'
             ? aVal.localeCompare(bVal)
             : bVal.localeCompare(aVal);
-
+      
         default:
           return 0;
       }
-
+    
       return sort.direction === 'asc'
         ? aVal - bVal
         : bVal - aVal;
     });
-
+  
     return sorted;
-  };
+  }, [sort]);
 
   const groupCards = (list) => {
     return Object.values(

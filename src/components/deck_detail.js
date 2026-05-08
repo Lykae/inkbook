@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import CardViewer from './card_view';
@@ -60,7 +60,7 @@ export default function DeckDetail() {
     }));
   }, [deck?.cards]);
 
-  const sortCards = (cards) => {
+  const sortCards = useCallback((cards) => {
     if (!sort.orderby) return cards;
 
     const sorted = [...cards];
@@ -119,7 +119,7 @@ export default function DeckDetail() {
     });
 
     return sorted;
-  };
+  }, [sort]);
 
   const maybeList = useMemo(() => {
       return (deck?.maybeboard || []).map((c) => ({
