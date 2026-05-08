@@ -4,24 +4,24 @@ import AnimateOnChange from 'react-animate-on-change';
 export default function Deck({ deck }) {
 
   const renderColor = () => {
-    const colorMap = {
-      Amber: '#f2c14e',
-      Amethyst: '#b46cff',
-      Emerald: '#3cb371',
-      Ruby: '#e63946',
-      Sapphire: '#4ea8de',
-      Steel: '#6c757d'
-    };
-
     if (!deck?.cards) return null;
-
-    const uniqueColors = [...new Set(deck.cards.map(c => c.Color))];
-
+    
+    const uniqueColors = [
+      ...new Set(
+        deck.cards.flatMap(card =>
+          (card.Color || '')
+            .split(',')
+            .map(c => c.trim())
+        )
+      )
+    ];
+  
     return uniqueColors.map((color) => (
-      <div
+      <img
         key={color}
-        className="color"
-        style={{ backgroundColor: colorMap[color] }}
+        className="deck_color_icon"
+        src={`/img/${color.toLowerCase()}.png`}
+        alt={color}
       />
     ));
   };

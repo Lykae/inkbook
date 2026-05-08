@@ -1255,9 +1255,23 @@ button {
     margin: 10px;
 }
 
-/* deck list label */
+/* deck list */
 h2 {
   margin: 0.5em;
+}
+
+.deck_item_colors {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.deck_color_icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  display: block;
 }
 
 /* sample hand */
