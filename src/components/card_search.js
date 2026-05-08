@@ -276,27 +276,43 @@ export default function CardSearch({
   const loading = useSelector(state => state.cards.loading);
 
   const applyBodyTextFilter = (cards, bodyText, useRegex) => {
-    if (!bodyText) return cards;
+    if (!bodyText?.trim()) return cards;
 
     try {
+    
       if (useRegex) {
+
         const regex = new RegExp(bodyText, 'i');
 
         return cards.filter(card => {
           const text = card.Body_Text || '';
           return regex.test(text);
         });
-      } else {
-        const search = bodyText.toLowerCase();
 
-        return cards.filter(card => {
-          const text = (card.Body_Text || '').toLowerCase();
-          return text.includes(search);
-        });
       }
+
+      const parts = bodyText
+        .split(';')
+        .map(s => s.trim())
+        .filter(Boolean);
+
+      if (!parts.length) return cards;
+
+      return cards.filter(card => {
+
+        const text = (card.Body_Text || '').toLowerCase();
+
+        return parts.every(part =>
+          text.includes(part.toLowerCase())
+        );
+
+      });
+
     } catch (err) {
+
       // invalid regex
       return cards;
+
     }
   };
 
@@ -504,47 +520,47 @@ export default function CardSearch({
     nextPage = 1,
     nextSort = sort
   ) => {
-  
+
     const cacheKey = buildCacheKey(
       nextTerm,
       nextFilters,
       nextSort
     );
-  
+
     const hasBodyText =
       nextFilters.bodyText &&
       nextFilters.bodyText.trim() !== '';
-  
+
     const hasOrder =
       nextSort.orderby &&
       nextSort.orderby.trim() !== '';
-  
+
     const hasHeavyFilter =
       hasBodyText || hasOrder;
-  
+
     if (hasHeavyFilter) {
-    
+
       if (allCardsCache.key !== cacheKey) {
-      
+
         const cards = await fetchAllCardsCached(
           nextTerm,
           nextFilters,
           nextSort
         );
-      
+
         setAllCardsCache({
           key: cacheKey,
           cards
         });
       }
-    
+
       setUseClientPaging(true);
       setPage(1);
-    
+
     } else {
-    
+
       setUseClientPaging(false);
-    
+
       searchRef.current(
         nextTerm,
         nextFilters,
@@ -1085,7 +1101,7 @@ export default function CardSearch({
                       
                   <input
                     type="text"
-                    placeholder="Search text..."
+                    placeholder="Banish;location..."
                     value={filtersDraft.bodyText || ''}
                     onChange={e =>
                       setFiltersDraft(f => ({
