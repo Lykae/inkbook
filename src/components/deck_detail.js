@@ -8,7 +8,6 @@ import { fetchDeck, deleteDeck } from '../features/decks/decksSlice';
 import SampleHand from './sample_hand';
 import ColorChart from './color_chart';
 import CmcChart from './cmc_chart';
-import AnimateOnChange from 'react-animate-on-change';
 
 import { getCardKey } from '../helpers/getCardKey';
 
@@ -24,23 +23,18 @@ export default function DeckDetail() {
     index: 0
   });
 
-  //const [activeCard, setActiveCard] = useState({
-  //  image: './../../img/mtg-back.jpg',
-  //  name: 'Select a card'
-  //});
-
   useEffect(() => {
     dispatch(fetchDeck(id));
   }, [id, dispatch]);
 
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  //const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [view, setView] = useState('stats'); 
 
-  useEffect(() => {
-    const handler = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener('resize', handler);
-    return () => window.removeEventListener('resize', handler);
-  }, []);
+  //useEffect(() => {
+  //  const handler = () => setIsMobile(window.innerWidth < 768);
+  //  window.addEventListener('resize', handler);
+  //  return () => window.removeEventListener('resize', handler);
+  //}, []);
 
   const [viewerOpen, setViewerOpen] = useState(false);
 
@@ -195,16 +189,6 @@ export default function DeckDetail() {
         ))}
       </div>
     );
-  };
-
-  const getViewerSource = (type) => {
-    switch (type) {
-      case 'maybe':
-        return maybeViewerCards;
-      case 'main':
-      default:
-        return viewerCards;
-    }
   };
 
   const renderList = (list, isMaybe = false) => {
