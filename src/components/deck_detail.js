@@ -18,6 +18,18 @@ export default function DeckDetail() {
 
   const deck = useSelector(state => state.decks.selectedDeck);
 
+  const [showSort, setShowSort] = useState(false);
+
+  const [sortDraft, setSortDraft] = useState({
+    orderby: '',
+    direction: 'asc'
+  });
+
+  const [sort, setSort] = useState({
+    orderby: '',
+    direction: 'asc'
+  });
+
   const [viewerState, setViewerState] = useState({
     cards: [],
     index: 0
@@ -48,20 +60,81 @@ export default function DeckDetail() {
     }));
   }, [deck?.cards]);
 
-  const maybeList = useMemo(() => {
-    return (deck?.maybeboard || []).map((c) => ({
-      ...c,
-      name: c.name || c.Name,
-      cost: c.cost ?? c.Cost,
-      set_name: c.set_name || c.Set_Name,
-      image: c.image || c.Image
-    }));
-  }, [deck?.maybeboard]);
+  const sortCards = (cards) => {
+    if (!sort.orderby) return cards;
 
-  const viewerCards = useMemo(() => {
+    const sorted = [...cards];
+
+    sorted.sort((a, b) => {
+      let aVal;
+      let bVal;
+
+      switch (sort.orderby) {
+        case 'cost':
+          aVal = a.cost ?? a.Cost ?? 0;
+          bVal = b.cost ?? b.Cost ?? 0;
+          break;
+
+        case 'strength':
+          aVal = a.Strength || 0;
+          bVal = b.Strength || 0;
+          break;
+
+        case 'lore':
+          aVal = a.Lore || 0;
+          bVal = b.Lore || 0;
+          break;
+
+        case 'name':
+          aVal = a.name || a.Name || '';
+          bVal = b.name || b.Name || '';
+
+          return sort.direction === 'asc'
+            ? aVal.localeCompare(bVal)
+            : bVal.localeCompare(aVal);
+
+        case 'color':
+          aVal = a.Color || '';
+          bVal = b.Color || '';
+
+          return sort.direction === 'asc'
+            ? aVal.localeCompare(bVal)
+            : bVal.localeCompare(aVal);
+
+        case 'rarity':
+          aVal = a.Rarity || '';
+          bVal = b.Rarity || '';
+
+          return sort.direction === 'asc'
+            ? aVal.localeCompare(bVal)
+            : bVal.localeCompare(aVal);
+
+        default:
+          return 0;
+      }
+
+      return sort.direction === 'asc'
+        ? aVal - bVal
+        : bVal - aVal;
+    });
+
+    return sorted;
+  };
+
+  const maybeList = useMemo(() => {
+      return (deck?.maybeboard || []).map((c) => ({
+        ...c,
+        name: c.name || c.Name,
+        cost: c.cost ?? c.Cost,
+        set_name: c.set_name || c.Set_Name,
+        image: c.image || c.Image
+      }));
+    }, [deck?.maybeboard]);
+
+    const viewerCards = useMemo(() => {
     const map = new Map();
 
-    for (const card of cardList) {
+    for (const card of sortCards(cardList)) {
       const key = getCardKey(card);
 
       if (!map.has(key)) {
@@ -70,12 +143,12 @@ export default function DeckDetail() {
     }
 
     return Array.from(map.values());
-  }, [cardList]);
+  }, [cardList, sortCards]);
 
   const maybeViewerCards = useMemo(() => {
     const map = new Map();
 
-    for (const card of maybeList) {
+    for (const card of sortCards(maybeList)) {
       const key = getCardKey(card);
 
       if (!map.has(key)) {
@@ -84,7 +157,7 @@ export default function DeckDetail() {
     }
 
     return Array.from(map.values());
-  }, [maybeList]);
+  }, [maybeList, sortCards]);
 
   const handleCardClick = (card, source = viewerCards) => {
     const cardsSnapshot = [...source];
@@ -365,12 +438,21 @@ export default function DeckDetail() {
         {view === 'cards' && (
           <div className="deck_output">
             <div className="deck_output_header">
-              <h5>Main Deck</h5>
-              <label>{cardList.length} cards</label>
+              <div className="deck_output_header_text">
+                <h5>Main Deck</h5>
+                <label>{cardList.length} cards</label>
+              </div>
+                    
+              <button
+                className="advanced_btn"
+                onClick={() => setShowSort(true)}
+              >
+                <i className="fa fa-sort" />
+              </button>
             </div>
 
             <div className="deck_output_cards">
-              {renderList(cardList)}
+              {renderList(sortCards(cardList))}
             </div>
           </div>
         )}
@@ -382,12 +464,21 @@ export default function DeckDetail() {
         {view === 'maybe' && (
           <div className="deck_output">
             <div className="deck_output_header">
-              <h5>Maybe</h5>
-              <label>{maybeList.length} cards</label>
+              <div className="deck_output_header_text">
+                <h5>Maybe</h5>
+                <label>{maybeList.length} cards</label>
+              </div>
+
+              <button
+                className="advanced_btn"
+                onClick={() => setShowSort(true)}
+              >
+                <i className="fa fa-sort" />
+              </button>
             </div>
                   
             <div className="deck_output_cards">
-              {renderList(maybeList, true)}
+              {renderList(sortCards(maybeList), true)}
             </div>
           </div>
         )}
@@ -419,6 +510,92 @@ export default function DeckDetail() {
         </button>
         
       </div>
+
+      {showSort && (
+        <div
+          className="advanced_overlay"
+          onClick={() => setShowSort(false)}
+        >
+          <div
+            className="advanced_modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+          
+            <div className="advanced_grid">
+
+              <div className="filter_row">
+
+                <div className="filter_field">
+                  <label>Sort By</label>
+
+                  <select
+                    value={sortDraft.orderby}
+                    onChange={e =>
+                      setSortDraft(s => ({
+                        ...s,
+                        orderby: e.target.value
+                      }))
+                    }
+                  >
+                    <option value="">None</option>
+                    <option value="cost">Cost</option>
+                    <option value="strength">Strength</option>
+                    <option value="lore">Lore</option>
+                    <option value="name">Name</option>
+                    <option value="rarity">Rarity</option>
+                    <option value="color">Color</option>
+                  </select>
+                </div>
+                  
+                <div className="filter_field">
+                  <label>Direction</label>
+                  
+                  <select
+                    value={sortDraft.direction}
+                    disabled={!sortDraft.orderby}
+                    onChange={e =>
+                      setSortDraft(s => ({
+                        ...s,
+                        direction: e.target.value
+                      }))
+                    }
+                  >
+                    <option value="asc">Ascending</option>
+                    <option value="desc">Descending</option>
+                  </select>
+                </div>
+                  
+              </div>
+                  
+            </div>
+                  
+            <div className="advanced_actions">
+                  
+              <button
+                onClick={() => {
+                  setSortDraft({
+                    orderby: '',
+                    direction: 'asc'
+                  });
+                }}
+              >
+                Reset
+              </button>
+              
+              <button
+                onClick={() => {
+                  setSort(sortDraft);
+                  setShowSort(false);
+                }}
+              >
+                Apply
+              </button>
+              
+            </div>
+              
+          </div>
+        </div>
+      )}
 
       <CardViewer
         open={viewerOpen}

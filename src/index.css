@@ -1292,3 +1292,20 @@ h2 {
     justify-content: center;
   }
 }
+
+/* deck view */
+.deck_view_header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 75vw;
+  height: 2em;
+}
+
+.deck_output_header_text {
+  display: flex;
+  flex-direction: row;    
+  justify-content: space-between;
+  align-items: center;
+  width: 85vw;
+}

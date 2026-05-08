@@ -5,7 +5,7 @@ export default function Deck({ deck }) {
 
   const renderColor = () => {
     if (!deck?.cards) return null;
-    
+
     const uniqueColors = [
       ...new Set(
         deck.cards.flatMap(card =>
@@ -15,7 +15,7 @@ export default function Deck({ deck }) {
         )
       )
     ];
-  
+
     return uniqueColors.map((color) => (
       <img
         key={color}
@@ -24,39 +24,6 @@ export default function Deck({ deck }) {
         alt={color}
       />
     ));
-  };
-
-  const renderDeckBottom = () => {
-    const cards = deck?.cards || [];
-
-    if (cards.length === 0) {
-      return (
-        <div className="deck_item_bottom empty">
-          No cards in deck
-        </div>
-      );
-    }
-
-    const randomCard = cards[Math.floor(Math.random() * cards.length)];
-
-    return (
-      <div className="deck_item_bottom">
-        {randomCard?.Image && (
-          <div
-            className="deck_image"
-            style={{
-              backgroundImage: `url(${randomCard.Image})`
-            }}
-          />
-        )}
-
-        <p>
-          {(deck.description || '').slice(0, 180)}...
-          <br />
-          <strong>(Read more)</strong>
-        </p>
-      </div>
-    );
   };
 
   const creator = deck?.creator || 'Anonymous';

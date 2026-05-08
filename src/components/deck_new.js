@@ -24,8 +24,19 @@ export default function NewDeck() {
   const editId = searchParams.get('edit');
 
   const selectedCard = useSelector(state => state.cards.selectedCard);
-  
 
+  const [showSort, setShowSort] = useState(false);
+
+  const [sortDraft, setSortDraft] = useState({
+    orderby: '',
+    direction: 'asc'
+  });
+
+  const [sort, setSort] = useState({
+    orderby: '',
+    direction: 'asc'
+  });
+  
   const [deckName, setDeckName] = useState('');
   const [deckCreator, setDeckCreator] = useState('');
   const [deckFormat, setDeckFormat] = useState('');
@@ -105,6 +116,65 @@ export default function NewDeck() {
   //const addSideboard = (card) => {
   //  setSideboardArray(prev => [...prev, card]);
   //};
+
+  const sortCards = (cards) => {
+    if (!sort.orderby) return cards;
+
+    const sorted = [...cards];
+    console.log("SORTED", sorted);
+
+    sorted.sort((a, b) => {
+      let aVal;
+      let bVal;
+
+      switch (sort.orderby) {
+        case 'cost':
+          aVal = a.Cost || 0;
+          bVal = b.Cost || 0;
+          break;
+
+        case 'strength':
+          aVal = a.Strength || 0;
+          bVal = b.Strength || 0;
+          break;
+
+        case 'lore':
+          aVal = a.Lore || 0;
+          bVal = b.Lore || 0;
+          break;
+
+        case 'name':
+          aVal = a.Name || '';
+          bVal = b.Name || '';
+          return sort.direction === 'asc'
+            ? aVal.localeCompare(bVal)
+            : bVal.localeCompare(aVal);
+
+        case 'color':
+          aVal = a.Color || '';
+          bVal = b.Color || '';
+          return sort.direction === 'asc'
+            ? aVal.localeCompare(bVal)
+            : bVal.localeCompare(aVal);
+
+        case 'rarity':
+          aVal = a.Rarity || '';
+          bVal = b.Rarity || '';
+          return sort.direction === 'asc'
+            ? aVal.localeCompare(bVal)
+            : bVal.localeCompare(aVal);
+
+        default:
+          return 0;
+      }
+
+      return sort.direction === 'asc'
+        ? aVal - bVal
+        : bVal - aVal;
+    });
+
+    return sorted;
+  };
 
   const groupCards = (list) => {
     return Object.values(
@@ -426,7 +496,7 @@ export default function NewDeck() {
     }, {});
   
     return Object.values(grouped)
-      .sort((a, b) => (a.card.Name || '').localeCompare(b.card.Name || ''))
+      //.sort((a, b) => (a.card.Name || '').localeCompare(b.card.Name || ''))
       .map(({ card, count }) => (
         <div key={getCardKey(card)} className="deck_row"
             onClick={() => openViewer(list, card)}>
@@ -439,7 +509,7 @@ export default function NewDeck() {
               <span
                 className={`card_count ${card.Inkable ? 'inkable' : 'not_inkable'}`}
               >
-                {count}
+                {card.Cost}
               </span>
       
               {card.Name}
@@ -525,10 +595,18 @@ export default function NewDeck() {
                   <i className="fa fa-th switch_icon right" />
                 </div>
               </div>
-              <h5>Main Deck</h5>
+              <div className="deck_view_header">
+                <h5>Main Deck</h5>
+                <button
+                  className="advanced_btn"
+                  onClick={() => setShowSort(true)}
+                >
+                  <i className="fa fa-sort" />
+                </button>
+              </div>
               {layout === 'grid'
-                ? renderGrid(mainDeckArray)
-                : renderList(mainDeckArray, removeCard)}
+                ? renderGrid(sortCards(mainDeckArray))
+                : renderList(sortCards(mainDeckArray), removeCard)}
             </div>
           )}
 
@@ -545,10 +623,18 @@ export default function NewDeck() {
                   <i className="fa fa-th switch_icon right" />
                 </div>
               </div>
-              <h5>Maybe</h5>
+              <div className="deck_view_header">
+                <h5>Maybe</h5>
+                <button
+                  className="advanced_btn"
+                  onClick={() => setShowSort(true)}
+                >
+                  <i className="fa fa-sort" />
+                </button>
+              </div>
               {layout === 'grid'
-                ? renderGrid(maybeboardArray)
-                : renderList(maybeboardArray, removeMaybeboard)}
+                ? renderGrid(sortCards(maybeboardArray))
+                : renderList(sortCards(maybeboardArray), removeMaybeboard)}
             </div>
           )}
 
@@ -647,6 +733,92 @@ export default function NewDeck() {
               <button onClick={() => setImportOpen(false)}>
                 Cancel
               </button>
+            </div>
+              
+          </div>
+        </div>
+      )}
+
+      {showSort && (
+        <div
+          className="advanced_overlay"
+          onClick={() => setShowSort(false)}
+        >
+          <div
+            className="advanced_modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+          
+            <div className="advanced_grid">
+
+              <div className="filter_row">
+
+                <div className="filter_field">
+                  <label>Sort By</label>
+
+                  <select
+                    value={sortDraft.orderby}
+                    onChange={e =>
+                      setSortDraft(s => ({
+                        ...s,
+                        orderby: e.target.value
+                      }))
+                    }
+                  >
+                    <option value="">None</option>
+                    <option value="cost">Cost</option>
+                    <option value="strength">Strength</option>
+                    <option value="lore">Lore</option>
+                    <option value="name">Name</option>
+                    <option value="rarity">Rarity</option>
+                    <option value="color">Color</option>
+                  </select>
+                </div>
+                  
+                <div className="filter_field">
+                  <label>Direction</label>
+                  
+                  <select
+                    value={sortDraft.direction}
+                    disabled={!sortDraft.orderby}
+                    onChange={e =>
+                      setSortDraft(s => ({
+                        ...s,
+                        direction: e.target.value
+                      }))
+                    }
+                  >
+                    <option value="asc">Ascending</option>
+                    <option value="desc">Descending</option>
+                  </select>
+                </div>
+                  
+              </div>
+                  
+            </div>
+                  
+            <div className="advanced_actions">
+                  
+              <button
+                onClick={() => {
+                  setSortDraft({
+                    orderby: '',
+                    direction: 'asc'
+                  });
+                }}
+              >
+                Reset
+              </button>
+              
+              <button
+                onClick={() => {
+                  setSort(sortDraft);
+                  setShowSort(false);
+                }}
+              >
+                Apply
+              </button>
+              
             </div>
               
           </div>
