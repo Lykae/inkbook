@@ -464,103 +464,146 @@ export default function CardSearch({
     const pageSizeMax = 1000;
     let page = 1;
     let all = [];
-  
+
     while (true) {
+
+      const search = buildSearchString(filters);
+
+      const finalSearch = [
+        term?.trim()
+          ? `name~${term.trim()}`
+          : null,
+        search || null
+      ]
+        .filter(Boolean)
+        .join(';');
+
       const result = await dispatch(fetchCards({
-        search: buildSearchString(filters),
+        search: finalSearch || undefined,
         page,
         pageSize: pageSizeMax,
         orderby: sortoptions.orderby,
         sortdirection: sortoptions.direction
-        
       })).unwrap();
-    
+
       if (!result?.length) break;
-    
+
       all = all.concat(result);
-    
+
       if (result.length < pageSizeMax) break;
-    
+
       page++;
     }
-  
+
     return all;
   };
 
-  const loadCardsForSearch = async (nextTerm = term, nextFilters = filters, nextPage = 1, nextSort = sort) => {
-    const cacheKey = buildCacheKey(nextTerm, nextFilters, nextSort);
-
+  const loadCardsForSearch = async (
+    nextTerm = term,
+    nextFilters = filters,
+    nextPage = 1,
+    nextSort = sort
+  ) => {
+  
+    const cacheKey = buildCacheKey(
+      nextTerm,
+      nextFilters,
+      nextSort
+    );
+  
     const hasBodyText =
-      nextFilters.bodyText && nextFilters.bodyText.trim() !== '';
-
+      nextFilters.bodyText &&
+      nextFilters.bodyText.trim() !== '';
+  
     const hasOrder =
-      nextSort.orderby && nextSort.orderby.trim() !== '';
-
-    const hasCache =
-      allCardsCache.key === cacheKey && allCardsCache.cards?.length;
-
+      nextSort.orderby &&
+      nextSort.orderby.trim() !== '';
+  
     const hasHeavyFilter =
-      hasBodyText ||
-      hasOrder;
-
-    if (hasBodyText) {
-      if (allCardsCache.key === cacheKey) {
-        console.log("using cache...");
-      } else {
-        const cards = await fetchAllCardsCached(nextTerm, nextFilters, nextSort);
+      hasBodyText || hasOrder;
+  
+    if (hasHeavyFilter) {
+    
+      if (allCardsCache.key !== cacheKey) {
+      
+        const cards = await fetchAllCardsCached(
+          nextTerm,
+          nextFilters,
+          nextSort
+        );
+      
         setAllCardsCache({
-            key: cacheKey,
-            cards
-          });
-        }
-        setPage(1);
+          key: cacheKey,
+          cards
+        });
+      }
+    
+      setUseClientPaging(true);
+      setPage(1);
+    
     } else {
-      searchRef.current(nextTerm, nextFilters, nextPage, nextSort);
+    
+      setUseClientPaging(false);
+    
+      searchRef.current(
+        nextTerm,
+        nextFilters,
+        nextPage,
+        nextSort
+      );
     }
-
-    setUseClientPaging(hasHeavyFilter && hasCache);
   };
 
   const handleApply = async () => {
-    const cacheKey = buildCacheKey(term, filtersDraft, sort);
+    const nextFilters = filtersDraft;
+    const nextSort = sort;
 
-    setFilters(filtersDraft);
+    const cacheKey = buildCacheKey(term, nextFilters, nextSort);
+
+    setFilters(nextFilters);
     setPage(1);
-
     setShowAdvanced(false);
 
     const hasBodyText =
-      filters.bodyText && filters.bodyText.trim() !== '';
+      nextFilters.bodyText &&
+      nextFilters.bodyText.trim() !== '';
 
     const hasOrder =
-      sort.orderby && sort.orderby.trim() !== '';
+      nextSort.orderby &&
+      nextSort.orderby.trim() !== '';
 
     const hasHeavyFilter =
-      hasBodyText ||
-      hasOrder;
+      hasBodyText || hasOrder;
 
-    const hasCache =
-      allCardsCache.key === cacheKey && allCardsCache.cards?.length;
+    let cards = allCardsCache.cards;
+    let usingCache = allCardsCache.key === cacheKey;
 
-    if (hasBodyText) {
-      if (allCardsCache.key === cacheKey) {
-        console.log('Using cached full dataset');
-      } else {
+    if (hasHeavyFilter) {
+      if (!usingCache) {
         console.log('Fetching full dataset...');
 
-        const cards = await fetchAllCardsCached(term, filtersDraft, sort);
+        cards = await fetchAllCardsCached(
+          term,
+          nextFilters,
+          nextSort
+        );
 
         setAllCardsCache({
           key: cacheKey,
           cards
         });
-        setPage(1); 
-      }
-    } else {
-      runSearch(term, filtersDraft, 1, sort);
-    }
 
-    setUseClientPaging(hasHeavyFilter && hasCache);
+        usingCache = true;
+      } else {
+        console.log('Using cached full dataset');
+      }
+
+      setUseClientPaging(true);
+    } else {
+      setUseClientPaging(false);
+
+      runSearch(term, nextFilters, 1, nextSort);
+    }
   };
 
   const handleReset = () => {
