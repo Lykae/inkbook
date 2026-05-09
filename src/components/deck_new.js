@@ -46,6 +46,7 @@ export default function NewDeck() {
   const [view, setView] = useState('search'); 
   // 'search' | 'main' | 'maybe' | 'props'
   const [isDirty, setIsDirty] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   //const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
@@ -98,7 +99,8 @@ export default function NewDeck() {
   }, [editId]);
 
   // unsaved changes protection
-  const blocker = useBlocker(isDirty);
+  const blocker = useBlocker(isDirty && !isSaving);
+
   useEffect(() => {
     if (blocker.state === "blocked") {
       const ok = window.confirm(
@@ -265,6 +267,8 @@ export default function NewDeck() {
     //if (!deckName) return setError('name');
     //if (!deckFormat) return setError('format');
     //if (mainDeckArray.length === 0) return setError('cards');
+    setIsSaving(true);
+
 
     const deck = {
       id: editId ? Number(editId) : undefined,
@@ -286,6 +290,8 @@ export default function NewDeck() {
     }
 
     setIsDirty(false);
+    setIsSaving(false);
+
 
   }, [deckName, deckCreator, deckFormat, deckDescription, mainDeckArray, maybeboardArray, editId, dispatch, navigate]);
 
