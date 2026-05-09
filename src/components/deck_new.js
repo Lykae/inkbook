@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useOutletContext, useNavigate } from 'react-router-dom';
+import { useOutletContext, useNavigate, useBlocker } from 'react-router-dom';
 //import AnimateOnChange from 'react-animate-on-change';
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -97,22 +97,36 @@ export default function NewDeck() {
     }
   }, [editId]);
 
-  // -------------------------
-  // CARD ACTIONS (kept simple)
-  // -------------------------
-  
-  //const addCard = (card) => {
-  //  setMainDeckArray(prev => [...prev, card]);
-  //};
-//
-  //const addFour = (card) => {
-  //  setMainDeckArray(prev => [...prev, card, card, card, card]);
-  //};
-//
-  //const addSideboard = (card) => {
-  //  setSideboardArray(prev => [...prev, card]);
-  //};
+  // unsaved changes protection
+  const blocker = useBlocker(isDirty);
+  useEffect(() => {
+    if (blocker.state === "blocked") {
+      const ok = window.confirm(
+        "You have unsaved changes. Leave anyway?"
+      );
 
+      if (ok) blocker.proceed();
+      else blocker.reset();
+    }
+  }, [blocker]);
+
+  useEffect(() => {
+  const handleBeforeUnload = (e) => {
+    if (!isDirty) return;
+
+    // Required for Chrome/Edge/Firefox
+    e.preventDefault();
+    e.returnValue = "";
+  };
+
+  window.addEventListener("beforeunload", handleBeforeUnload);
+
+  return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [isDirty]);
+
+  // sort cards
   const sortCards = useCallback((cards) => {
     if (!sort.orderby) return cards;
     
@@ -270,6 +284,8 @@ export default function NewDeck() {
       console.log("createresult", result);  
       navigate(`/decks/new?edit=${result.payload.id}`);
     }
+
+    setIsDirty(false);
 
   }, [deckName, deckCreator, deckFormat, deckDescription, mainDeckArray, maybeboardArray, editId, dispatch, navigate]);
 
