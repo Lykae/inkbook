@@ -2106,7 +2106,9 @@ footer {
     height: 40px;
     width: 120px; }
     .intro_build:hover, .intro_build:active, .intro_build:focus {
-      background-color: #385c48;
+      background-color: #222;
+      color: #F6BE00;
+      border: 1px solid #F6BE00;
       outline: 0;
       cursor: pointer; }
   .intro_all {
@@ -2120,6 +2122,8 @@ footer {
     height: 40px;
     width: 120px; }
     .intro_all:hover, .intro_all:active, .intro_all:focus {
-      background-color: black;
+      background-color: #222;
+      color: #F6BE00;
+      border: 1px solid #F6BE00;
       outline: 0;
       cursor: pointer; }
