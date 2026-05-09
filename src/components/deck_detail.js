@@ -200,32 +200,73 @@ export default function DeckDetail() {
     });
   };
 
-  const handleExport = () => {
+  const copyText = async (text) => {
+    // Modern API
+    if (navigator.clipboard && window.isSecureContext) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch (err) {
+        console.warn('Clipboard API failed, using fallback');
+      }
+    }
+  
+    // Fallback for mobile / older browsers
+    try {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+    
+      // Prevent scrolling on iOS
+      textArea.style.position = 'fixed';
+      textArea.style.top = '-9999px';
+      textArea.style.left = '-9999px';
+    
+      document.body.appendChild(textArea);
+    
+      textArea.focus();
+      textArea.select();
+    
+      const success = document.execCommand('copy');
+    
+      document.body.removeChild(textArea);
+    
+      return success;
+    } catch (err) {
+      console.error('Fallback copy failed:', err);
+      return false;
+    }
+  };
+  
+  const handleExport = async () => {
     if (!cardList.length) return;
-
-    // group cards
+  
     const counts = {};
-
+  
     cardList.forEach(card => {
       const key = getCardKey(card);
-
+    
       if (!counts[key]) {
-        counts[key] = { name: card.name, count: 0 };
+        counts[key] = {
+          name: card.name,
+          count: 0
+        };
       }
-
+    
       counts[key].count++;
     });
-
-    // build export string
+  
     const exportText = Object.values(counts)
       .sort((a, b) => a.name.localeCompare(b.name))
       .map(({ name, count }) => `${count} ${name}`)
       .join('\n');
-
-    // copy to clipboard
-    navigator.clipboard.writeText(exportText);
-
-    alert('Deck copied to clipboard!');
+  
+    const copied = await copyText(exportText);
+  
+    if (copied) {
+      alert('Deck copied to clipboard!');
+    } else {
+      alert('Failed to copy deck.');
+    }
   };
 
   const renderGrid = (list, source = viewerCards) => {
