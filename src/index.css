@@ -458,6 +458,12 @@ code {
 }
 
 /* Logo */
+.logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
 .logo_text {
   font-family: "Playwrite DE SAS", cursive;
   font-optical-sizing: auto;

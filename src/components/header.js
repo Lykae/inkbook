@@ -18,10 +18,10 @@ export default function Header({
 
       {/* LEFT */}
       <div className="header_left">
-        <Link to="/decks" className="logo">
+        <Link to="/" className="logo">
           <img src="/img/Logo.png" alt="Inkbook" />
+          <div className="logo_text_banner">INKBOOK</div>
         </Link>
-        <div className="logo_text_banner">INKBOOK</div>
       </div>
 
       {/* CENTER NAV */}
