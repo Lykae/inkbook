@@ -272,8 +272,19 @@ export default function CardSearch({
   //  }, 300),
   //  []
   //);
+  
 
   const loading = useSelector(state => state.cards.loading);
+
+  const prevLoading = useRef(false);
+
+  useEffect(() => {
+    if (prevLoading.current && !loading) {
+      setSearchSubmitted(true);
+    }
+
+    prevLoading.current = loading;
+  }, [loading]);
 
   const applyBodyTextFilter = (cards, bodyText, useRegex) => {
     if (!bodyText?.trim()) return cards;
@@ -471,10 +482,10 @@ export default function CardSearch({
     }, 300)
   );
 
-  const runSearch = (nextTerm = term, nextFilters = filters, nextPage = page, nextSort = sort) => {
-    setSearchSubmitted(true);
-    searchRef.current(nextTerm, nextFilters, nextPage, nextSort);
-  };
+  //const runSearch = (nextTerm = term, nextFilters = filters, nextPage = page, nextSort = sort) => {
+  //  setSearchSubmitted(true);
+  //  searchRef.current(nextTerm, nextFilters, nextPage, nextSort);
+  //};
 
   const fetchAllCardsCached = async (term, filters, sortoptions) => {
     const pageSizeMax = 1000;
@@ -555,7 +566,6 @@ export default function CardSearch({
       }
 
       setUseClientPaging(true);
-      setPage(1);
 
     } else {
 
@@ -568,58 +578,19 @@ export default function CardSearch({
         nextSort
       );
     }
+    setPage(nextPage);
   };
+  
 
   const handleApply = async () => {
     const nextFilters = filtersDraft;
-    const nextSort = sort;
-
-    const cacheKey = buildCacheKey(term, nextFilters, nextSort);
 
     setFilters(nextFilters);
     setPage(1);
     setShowAdvanced(false);
 
-    const hasBodyText =
-      nextFilters.bodyText &&
-      nextFilters.bodyText.trim() !== '';
-
-    const hasOrder =
-      nextSort.orderby &&
-      nextSort.orderby.trim() !== '';
-
-    const hasHeavyFilter =
-      hasBodyText || hasOrder;
-
-    let cards = allCardsCache.cards;
-    let usingCache = allCardsCache.key === cacheKey;
-
-    if (hasHeavyFilter) {
-      if (!usingCache) {
-        console.log('Fetching full dataset...');
-
-        cards = await fetchAllCardsCached(
-          term,
-          nextFilters,
-          nextSort
-        );
-
-        setAllCardsCache({
-          key: cacheKey,
-          cards
-        });
-
-        usingCache = true;
-      } else {
-        console.log('Using cached full dataset');
-      }
-
-      setUseClientPaging(true);
-    } else {
-      setUseClientPaging(false);
-
-      runSearch(term, nextFilters, 1, nextSort);
-    }
+    //loadCardsForSearch(term, filters, 1, sortDraft);
+    
   };
 
   const handleReset = () => {
@@ -722,15 +693,31 @@ export default function CardSearch({
     
         </div>
       </div>
+      <div className="search_input_row">
+        <input
+          placeholder="Elsa"
+          value={term}
+          onChange={(e) => {
+            setTerm(e.target.value);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              setPage(1);
+              loadCardsForSearch(e.target.value, filters, 1, sort);;
+            }
+          }}
+        />
 
-      <input
-        placeholder="Elsa"
-        onChange={(e) => {
-          setTerm(e.target.value);
-          setPage(1);
-          loadCardsForSearch(e.target.value, filters, 1);;
-        }}
-      />
+        <button
+          className="search_button"
+          onClick={() => {
+            setPage(1);
+            loadCardsForSearch(term, filters, 1, sort);
+          }}
+        >
+          <i className="fa fa-search" />
+        </button>
+      </div>
 
       {layout === 'grid' ? (
           renderGrid()
@@ -742,7 +729,7 @@ export default function CardSearch({
           </div>
         ) : (
           <>
-            {pagedCards?.length < 1 && searchSubmitted ? (
+            {!loading && pagedCards?.length < 1 && searchSubmitted ? (
               <span className="error">No cards found.</span>
             ) : (
               pagedCards?.map((card, i) => (
@@ -1211,7 +1198,6 @@ export default function CardSearch({
                 <button onClick={() => {
                   setSort(sortDraft);
                   setShowSort(false);
-                  loadCardsForSearch(term, filters, 1, sortDraft);
                 }}>
                   Apply
                 </button>

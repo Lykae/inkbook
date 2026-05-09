@@ -1168,8 +1168,7 @@ input[type="checkbox"] {
   overflow-y: auto;
 }
 
-.card_search input {
-  flex-shrink: 0;
+.card_search input {  
   width: 100%;
 }
 
@@ -1364,4 +1363,20 @@ h2 {
   background-color: #222 !important;
   border: 1px #F6BE00 solid !important;
   margin-right: 0.5em !important;
+}
+
+/* search input row */
+.search_input_row {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.search_button {
+  background: #F6BE00;
+  color: #333;
+  border: none;
+  margin: 0;
+  min-width: 3em;
 }
