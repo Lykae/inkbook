@@ -50,6 +50,8 @@ export default function DeckDetail() {
 
   const [viewerOpen, setViewerOpen] = useState(false);
 
+  const [layout, setLayout] = useState('list'); // 'list' | 'grid'
+
   const cardList = useMemo(() => {
     return (deck?.cards || []).map((c) => ({
       ...c,
@@ -190,22 +192,6 @@ export default function DeckDetail() {
     }
   };
 
-  const getGroupedCards = () => {
-    const counts = {};
-
-    cardList.forEach(card => {
-      const key = getCardKey(card);
-
-      if (!counts[key]) {
-        counts[key] = { card, count: 0 };
-      }
-
-      counts[key].count++;
-    });
-
-    return Object.values(counts);
-  };
-
   const handleCloseViewer = () => {
     setViewerOpen(false);
     setViewerState({
@@ -242,8 +228,22 @@ export default function DeckDetail() {
     alert('Deck copied to clipboard!');
   };
 
-  const renderMobileGrid = () => {
-    const grouped = getGroupedCards();
+  const renderGrid = (list, source = viewerCards) => {
+    const grouped = Object.values(
+      list.reduce((acc, card) => {
+        const key = getCardKey(card);
+
+        if (!acc[key]) {
+          acc[key] = {
+            card,
+            count: 0
+          };
+        }
+
+        acc[key].count++;
+        return acc;
+      }, {})
+    );
 
     return (
       <div className="mobile_card_grid">
@@ -251,12 +251,14 @@ export default function DeckDetail() {
           <div
             key={getCardKey(card)}
             className="mobile_card_item"
-            onClick={() => handleCardClick(card, viewerCards)}
+            onClick={() => handleCardClick(card, source)}
           >
             <img src={card.image} alt={card.name} />
 
-            <div className="card_count_badge">
-              {count}
+            <div className="card_grid_controls">
+              <div className="card_count_badge_grid">
+                {count}
+              </div>
             </div>
           </div>
         ))}
@@ -437,14 +439,26 @@ export default function DeckDetail() {
       
         {view === 'cards' && (
           <div className="deck_output">
+            <div className="layout_switch_detail">
+              <div
+                className={`switch_track ${layout === 'grid' ? 'grid' : 'list'}`}
+                onClick={() =>
+                  setLayout(prev => prev === 'list' ? 'grid' : 'list')
+                }
+              >
+                <div className="switch_thumb" />
+              
+                <i className="fa fa-list switch_icon left" />
+                <i className="fa fa-th switch_icon right" />
+              </div>
+            </div>
             <div className="deck_output_header">
               <div className="deck_output_header_text">
                 <h5>Main Deck</h5>
-                <label>{cardList.length} cards</label>
               </div>
                     
               <button
-                className="advanced_btn"
+                className="advanced_btn_detail"
                 onClick={() => setShowSort(true)}
               >
                 <i className="fa fa-sort" />
@@ -452,25 +466,37 @@ export default function DeckDetail() {
             </div>
 
             <div className="deck_output_cards">
-              {renderList(sortCards(cardList))}
+              {layout === 'grid'
+                ? renderGrid(sortCards(cardList), viewerCards)
+                : renderList(sortCards(cardList))}
             </div>
           </div>
         )}
-
-        {view === 'viewer' && renderMobileGrid()}
 
         {view === 'stats' && renderStatsColumn()}
 
         {view === 'maybe' && (
           <div className="deck_output">
+            <div className="layout_switch_detail">
+              <div
+                className={`switch_track ${layout === 'grid' ? 'grid' : 'list'}`}
+                onClick={() =>
+                  setLayout(prev => prev === 'list' ? 'grid' : 'list')
+                }
+              >
+                <div className="switch_thumb" />
+              
+                <i className="fa fa-list switch_icon left" />
+                <i className="fa fa-th switch_icon right" />
+              </div>
+            </div>
             <div className="deck_output_header">
               <div className="deck_output_header_text">
                 <h5>Maybe</h5>
-                <label>{maybeList.length} cards</label>
               </div>
 
               <button
-                className="advanced_btn"
+                className="advanced_btn_detail"
                 onClick={() => setShowSort(true)}
               >
                 <i className="fa fa-sort" />
@@ -478,7 +504,9 @@ export default function DeckDetail() {
             </div>
                   
             <div className="deck_output_cards">
-              {renderList(sortCards(maybeList), true)}
+              {layout === 'grid'
+                ? renderGrid(sortCards(maybeList), maybeViewerCards)
+                : renderList(sortCards(maybeList), true)}
             </div>
           </div>
         )}
@@ -495,10 +523,6 @@ export default function DeckDetail() {
       
         <button onClick={() => setView('cards')} className="nav_btn">
           <i className="fa fa-list" />
-        </button>
-        
-        <button onClick={() => setView('viewer')} className="nav_btn">
-          <i className="fa fa-picture-o" />
         </button>
         
         <button onClick={() => setView('maybe')} className="nav_btn">
