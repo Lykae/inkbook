@@ -43,8 +43,6 @@ export default function NewDeck() {
   const [mainDeckArray, setMainDeckArray] = useState([]);
   const [maybeboardArray, setMaybeboardArray] = useState([]);
 
-  const [error, setError] = useState(null);
-
   const [view, setView] = useState('search'); 
   // 'search' | 'main' | 'maybe' | 'props'
   const [isDirty, setIsDirty] = useState(false);
@@ -250,15 +248,15 @@ export default function NewDeck() {
   // -------------------------
 
   const saveDeck = useCallback(async () => {
-    if (!deckName) return setError('name');
-    if (!deckFormat) return setError('format');
-    if (mainDeckArray.length === 0) return setError('cards');
+    //if (!deckName) return setError('name');
+    //if (!deckFormat) return setError('format');
+    //if (mainDeckArray.length === 0) return setError('cards');
 
     const deck = {
       id: editId ? Number(editId) : undefined,
-      name: deckName,
-      creator: deckCreator,
-      format: deckFormat,
+      name: deckName ? deckName : "Untitled Deck",
+      creator: deckCreator ? deckCreator : "Anonymous",
+      format: deckFormat ? deckFormat : "No Limit",
       description: deckDescription,
       cards: mainDeckArray,
       maybeboard: maybeboardArray,
@@ -423,21 +421,6 @@ export default function NewDeck() {
     setIsDirty(true);
   };
 
-  // -------------------------
-  // ERROR UI (preserved logic)
-  // -------------------------
-  const renderError = () => {
-    if (!error) return null;
-
-    const messages = {
-      name: '*Please give your deck a name',
-      format: '*Please give your deck a format',
-      cards: '*Please give your deck some cards'
-    };
-
-    return <div className="row error">{messages[error]}</div>;
-  };
-
   const CardImage = ({ src, alt, extraKey }) => {
     return (
       <img
@@ -542,7 +525,6 @@ export default function NewDeck() {
 
   return (
     <div className="container deck">
-      {renderError()}
         <div className={`mobile_view_container ${animDir}`}>
 
           <AnimatePresence mode="wait">
