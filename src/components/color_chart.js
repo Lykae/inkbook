@@ -15,11 +15,18 @@ export default function ColorChart({ deck }) {
     const cards = deck?.cards || [];
 
     cards.forEach((card) => {
-      const color = card.Color; // Lorcana API field
-
-      if (color && result[color] !== undefined) {
-        result[color]++;
-      }
+      if (!card.Color) return;
+        
+      const colors = card.Color
+        .split(',')
+        .map(c => c.trim())
+        .filter(Boolean);
+        
+      colors.forEach(color => {
+        if (result[color] !== undefined) {
+          result[color]++;
+        }
+      });
     });
 
     return result;
