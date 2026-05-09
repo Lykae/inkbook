@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  createBrowserRouter,
+  createHashRouter,
   RouterProvider
 } from "react-router-dom";
 
@@ -11,7 +11,7 @@ import DeckDetail from "./components/deck_detail";
 import ProxyPage from "./components/proxy_page";
 import Intro from "./components/intro";
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: "/",
     element: <AppLayout />,
