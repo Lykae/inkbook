@@ -2035,11 +2035,11 @@ footer {
       display: none; } }
 
 .print-button {
-  background-color: #558B6E;
+  background-color: #222;
   -webkit-transition: all 200ms ease-out;
   transition: all 200ms ease-out;
   border: 0;
-  color: white;
+  color: #F6BE00;
   height: 40px;
   width: 120px;
   display: inline-block;
@@ -2048,12 +2048,12 @@ footer {
   margin: 20px;
   font-family: "Oswald", sans-serif; }
   .print-button:hover, .print-button:active, .print-button:focus {
-    background-color: #385c48;
+    background-color: #F6BE00;
     outline: 0;
     cursor: pointer; }
 
 .back-button {
-  background-color: #270722;
+  background-color: #222;
   -webkit-transition: all 200ms ease-out;
   transition: all 200ms ease-out;
   border: 0;
@@ -2067,7 +2067,7 @@ footer {
   margin: 20px;
   font-family: "Oswald", sans-serif; }
   .back-button:hover, .back-button:active, .back-button:focus {
-    background-color: #555;
+    background-color: #F6BE00;
     outline: 0;
     cursor: pointer; }
 

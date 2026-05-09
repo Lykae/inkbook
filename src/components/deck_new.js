@@ -726,12 +726,12 @@ export default function NewDeck() {
             />
 
             <div className="importmodal_actions">
+              <button className="advanced_cancel_btn" onClick={() => setImportOpen(false)}>
+                Cancel
+              </button>
+
               <button onClick={handleImport}>
                 Import
-              </button>
-              
-              <button onClick={() => setImportOpen(false)}>
-                Cancel
               </button>
             </div>
               
@@ -809,15 +809,25 @@ export default function NewDeck() {
               >
                 Reset
               </button>
-              
-              <button
-                onClick={() => {
-                  setSort(sortDraft);
-                  setShowSort(false);
-                }}
-              >
-                Apply
-              </button>
+
+              <div>
+                <button className="advanced_cancel_btn"
+                  onClick={() => {
+                    setShowSort(false);
+                  }}
+                >
+                  Cancel
+                </button>
+                
+                <button
+                  onClick={() => {
+                    setSort(sortDraft);
+                    setShowSort(false);
+                  }}
+                >
+                  Apply
+                </button>
+              </div>
               
             </div>
               

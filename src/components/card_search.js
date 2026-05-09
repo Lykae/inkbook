@@ -698,14 +698,14 @@ export default function CardSearch({
     
         <div className="search_controls">
           <button
-            className="advanced_btn"
+            className="advanced_btn_search"
             onClick={() => setImportOpen(true)}
           >
             <i className="fa fa-upload" />
           </button>
 
           <button
-            className="advanced_btn"
+            className="advanced_btn_search"
             onClick={() => setShowSort(true)}
           >
             <i className="fa fa-sort" />
@@ -714,7 +714,7 @@ export default function CardSearch({
           {/* advanced filters */}
           
           <button
-            className="advanced_btn"
+            className="advanced_btn_search"
             onClick={() => setShowAdvanced(true)}
           >
             <i className="fa fa-sliders" />
@@ -1120,10 +1120,18 @@ export default function CardSearch({
               <button onClick={handleReset}>
                 Reset
               </button>
+
+              <div>
+                <button className="advanced_cancel_btn"
+                        onClick={() => setShowAdvanced(false)}
+                >
+                  Cancel
+                </button>
                             
-              <button onClick={handleApply}>
-                Apply
-              </button>
+                <button onClick={handleApply}>
+                  Apply
+                </button>
+              </div>
             </div>
             
           </div>
@@ -1190,14 +1198,24 @@ export default function CardSearch({
               }}>
                 Reset
               </button>
+
+              <div>
+                <button className="advanced_cancel_btn"
+                  onClick={() => {
+                    setShowSort(false);
+                  }}
+                >
+                  Cancel
+                </button>
             
-              <button onClick={() => {
-                setSort(sortDraft);
-                setShowSort(false);
-                loadCardsForSearch(term, filters, 1, sortDraft);
-              }}>
-                Apply
-              </button>
+                <button onClick={() => {
+                  setSort(sortDraft);
+                  setShowSort(false);
+                  loadCardsForSearch(term, filters, 1, sortDraft);
+                }}>
+                  Apply
+                </button>
+              </div>
             </div>
             
           </div>

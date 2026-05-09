@@ -210,58 +210,58 @@ export default function DeckDetail() {
         console.warn('Clipboard API failed, using fallback');
       }
     }
-  
+
     // Fallback for mobile / older browsers
     try {
       const textArea = document.createElement('textarea');
       textArea.value = text;
-    
+
       // Prevent scrolling on iOS
       textArea.style.position = 'fixed';
       textArea.style.top = '-9999px';
       textArea.style.left = '-9999px';
-    
+
       document.body.appendChild(textArea);
-    
+
       textArea.focus();
       textArea.select();
-    
+
       const success = document.execCommand('copy');
-    
+
       document.body.removeChild(textArea);
-    
+
       return success;
     } catch (err) {
       console.error('Fallback copy failed:', err);
       return false;
     }
   };
-  
+
   const handleExport = async () => {
     if (!cardList.length) return;
-  
+
     const counts = {};
-  
+
     cardList.forEach(card => {
       const key = getCardKey(card);
-    
+
       if (!counts[key]) {
         counts[key] = {
           name: card.name,
           count: 0
         };
       }
-    
+
       counts[key].count++;
     });
-  
+
     const exportText = Object.values(counts)
       .sort((a, b) => a.name.localeCompare(b.name))
       .map(({ name, count }) => `${count} ${name}`)
       .join('\n');
-  
+
     const copied = await copyText(exportText);
-  
+
     if (copied) {
       alert('Deck copied to clipboard!');
     } else {
@@ -646,15 +646,24 @@ export default function DeckDetail() {
               >
                 Reset
               </button>
+              <div>
+                <button className="advanced_cancel_btn"
+                  onClick={() => {
+                    setShowSort(false);
+                  }}
+                >
+                  Cancel
+                </button>
               
-              <button
-                onClick={() => {
-                  setSort(sortDraft);
-                  setShowSort(false);
-                }}
-              >
-                Apply
-              </button>
+                <button
+                  onClick={() => {
+                    setSort(sortDraft);
+                    setShowSort(false);
+                  }} 
+                >
+                  Apply
+                </button>
+              </div>
               
             </div>
               
