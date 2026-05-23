@@ -7,7 +7,7 @@ export async function initDB() {
   if (db) return db;
 
   const SQL = await initSqlJs({
-    locateFile: file => `/sql-wasm.wasm`
+    locateFile: file => `${process.env.PUBLIC_URL}/sql-wasm.wasm`
   });
 
   // 👇 try restore first

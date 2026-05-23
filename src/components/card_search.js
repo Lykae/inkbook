@@ -848,7 +848,7 @@ export default function CardSearch({
                         }}
                       >
                         <img
-                          src={`/img/${color}.png`}
+                          src={`/inkbook/img/${color}.png`}
                           alt={color}
                         />
                       </button>

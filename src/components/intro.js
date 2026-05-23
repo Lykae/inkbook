@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+import logo from "./../"
+
 export default function Intro() {
   return (
     <div className="intro">
@@ -8,7 +10,7 @@ export default function Intro() {
 
         <Link to="/">
           <img
-            src="/img/Logo.png"
+            src="/inkbook/img/Logo.png"
             alt="Inkbook"
           />
         </Link>

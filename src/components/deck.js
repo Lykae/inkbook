@@ -20,7 +20,7 @@ export default function Deck({ deck }) {
       <img
         key={color}
         className="deck_color_icon"
-        src={`/img/${color.toLowerCase()}.png`}
+        src={`/inkbook/img/${color.toLowerCase()}.png`}
         alt={color}
       />
     ));

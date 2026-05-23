@@ -11,6 +11,7 @@ import DeckDetail from "./components/deck_detail";
 import ProxyPage from "./components/proxy_page";
 import Intro from "./components/intro";
 
+
 const router = createHashRouter([
   {
     path: "/",
@@ -38,7 +39,8 @@ const router = createHashRouter([
       }
     ]
   }
-]);
+]
+);
 
 export default function AppRouter() {
   return <RouterProvider router={router} />;
